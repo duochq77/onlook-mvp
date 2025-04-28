@@ -1,20 +1,11 @@
-// src/App.tsx
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import RoleSelectPage from './components/RoleSelectPage';
-import SellerPage from './components/SellerPage';
-import ViewerPage from './components/ViewerPage';
+import Livestream from './Livestream';
 
-const App = () => {
+function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<RoleSelectPage />} />
-        <Route path="/seller" element={<SellerPage />} />
-        <Route path="/viewer" element={<ViewerPage />} />
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <Livestream />
+    </div>
   );
-};
+}
 
 export default App;

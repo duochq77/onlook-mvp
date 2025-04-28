@@ -1,30 +1,17 @@
-// src/components/RoleSelectPage.tsx
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const RoleSelectPage = () => {
+export default function RoleSelectPage() {
   const navigate = useNavigate();
 
+  const handleSelectRole = (role: 'seller' | 'viewer') => {
+    navigate(`/${role}`);
+  };
+
   return (
-    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-      <h2>Chào mừng tới Onlook</h2>
-      <p>Hãy chọn vai trò:</p>
-      <div style={{ marginTop: '20px' }}>
-        <button
-          style={{ margin: '10px', padding: '10px 20px' }}
-          onClick={() => navigate('/viewer')}
-        >
-          Xem livestream
-        </button>
-        <button
-          style={{ margin: '10px', padding: '10px 20px' }}
-          onClick={() => navigate('/seller')}
-        >
-          Bán hàng
-        </button>
-      </div>
+    <div>
+      <h2>Chọn vai trò:</h2>
+      <button onClick={() => handleSelectRole('seller')}>Người Bán</button>
+      <button onClick={() => handleSelectRole('viewer')}>Người Xem</button>
     </div>
   );
-};
-
-export default RoleSelectPage;
+}

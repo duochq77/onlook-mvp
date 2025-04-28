@@ -1,47 +1,41 @@
-// src/components/ViewerPage.tsx
-import React, { useEffect, useRef, useState } from 'react';
-import { connectToViewerRoom } from '../services/LiveKitServiceViewer';
-import { RemoteTrack } from 'livekit-client';
+import { useEffect, useRef } from 'react';
+import { Room, RemoteTrack, RemoteTrackPublication, RemoteParticipant, RoomEvent } from 'livekit-client';
 
-const ViewerPage = () => {
-  const [roomName, setRoomName] = useState('onlook-demo');
-  const [connecting, setConnecting] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+const LIVEKIT_URL = import.meta.env.VITE_LIVEKIT_URL || 'wss://onlook-dev-zvm78p9y.livekit.cloud';
+const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....'; // Token của bạn
 
-  const handleJoin = async () => {
-    try {
-      setConnecting(true);
-      const res = await fetch(`http://localhost:3001/get-viewer-token?roomName=${roomName}`);
-      const data = await res.json();
-      const token = data.token;
+export default function ViewerPage() {
+  const roomRef = useRef<Room>();
 
-      const room = await connectToViewerRoom(token);
+  useEffect(() => {
+    const start = async () => {
+      const room = new Room({});
+      await room.connect(LIVEKIT_URL, TOKEN);
+      roomRef.current = room;
 
-      room.on('trackSubscribed', (track: RemoteTrack) => {
-        if (track.kind === 'video' && videoRef.current) {
-          track.attach(videoRef.current);
+      room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, publication: RemoteTrackPublication, participant: RemoteParticipant) => {
+        if (track.kind === 'video') {
+          const videoElement = track.attach();
+          document.getElementById('remote-video')?.appendChild(videoElement);
         }
       });
 
-    } catch (error) {
-      console.error('Failed to connect viewer room', error);
-    } finally {
-      setConnecting(false);
-    }
-  };
+      room.on(RoomEvent.Disconnected, () => {
+        console.log('Disconnected');
+      });
+    };
 
-  useEffect(() => {
-    handleJoin();
+    start();
+
+    return () => {
+      roomRef.current?.disconnect();
+    };
   }, []);
 
   return (
     <div>
-      <h2>Trang người xem</h2>
-      <div>
-        <video ref={videoRef} autoPlay muted style={{ width: '100%', maxHeight: '80vh' }} />
-      </div>
+      <h2>Viewer Livestream</h2>
+      <div id="remote-video" />
     </div>
   );
-};
-
-export default ViewerPage;
+}
