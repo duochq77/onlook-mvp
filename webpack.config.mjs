@@ -21,8 +21,8 @@ export default {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
-      }
-    ]
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
