@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",  // Đảm bảo rằng module được đặt là 'esnext'
-    "moduleResolution": "node",
-    "lib": ["dom", "esnext"],
+    "target": "es6",
+    "module": "esnext",
+    "jsx": "react-jsx",
     "strict": true,
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx"
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
