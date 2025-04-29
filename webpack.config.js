@@ -1,12 +1,12 @@
-import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import Dotenv from 'dotenv-webpack'; // ✅ Thêm dòng này
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
-export default {
+module.exports = {
   entry: './src/index.tsx',
   output: {
     filename: 'main.js',
-    path: path.resolve('dist'),
+    path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
   },
   resolve: {
@@ -25,7 +25,7 @@ export default {
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
-    new Dotenv(), // ✅ Thêm plugin này để webpack đọc biến môi trường
+    new Dotenv(), // Giúp đọc biến môi trường từ .env
   ],
   devServer: {
     historyApiFallback: true,
