@@ -31,8 +31,10 @@ export default function SellerPage() {
       video
       audio
     >
-      <RoomAudioRenderer />
-      <VideoGrid />
+      <>
+        <RoomAudioRenderer />
+        <VideoGrid />
+      </>
     </LiveKitRoom>
   );
 }
