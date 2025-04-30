@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { LiveKitRoom } from '@livekit/components-react';
+import {
+  LiveKitRoom,
+  RoomAudioRenderer,
+  ParticipantTile,
+  GridLayout,
+  useTracks,
+  TrackReferenceOrPlaceholder,
+} from '@livekit/components-react';
 
 export default function SellerPage() {
   const [token, setToken] = useState<string | null>(null);
@@ -14,9 +21,7 @@ export default function SellerPage() {
     fetchToken();
   }, []);
 
-  if (!token) {
-    return <div>Đang lấy token phát livestream...</div>;
-  }
+  if (!token) return <div>Đang lấy token phát livestream...</div>;
 
   return (
     <LiveKitRoom
@@ -26,7 +31,22 @@ export default function SellerPage() {
       video
       audio
     >
-      <h2>Đang phát livestream</h2>
+      <RoomAudioRenderer />
+      <VideoGrid />
     </LiveKitRoom>
+  );
+}
+
+function VideoGrid() {
+  const tracks = useTracks([
+    { source: 'camera', withPlaceholder: true },
+  ]).sort((a, b) => (a.participant.isLocal ? -1 : 1));
+
+  return (
+    <GridLayout tracks={tracks}>
+      {tracks.map((track: TrackReferenceOrPlaceholder) => (
+        <ParticipantTile key={track.participant.sid} trackRef={track} />
+      ))}
+    </GridLayout>
   );
 }
