@@ -1,11 +1,9 @@
 import {
   LiveKitRoom,
-  RoomAudioRenderer,
   StartAudio,
-  ParticipantTile,
-  useTracks,
+  RoomAudioRenderer,
+  VideoConference,
 } from '@livekit/components-react';
-import { Track } from 'livekit-client';
 import { useEffect } from 'react';
 
 type Props = {
@@ -25,31 +23,12 @@ function ViewerPage({ token, room }: Props) {
         serverUrl={process.env.VITE_LIVEKIT_URL}
         connect={true}
         video={false}
-        audio={false}
+        audio={false} // Không publish, chỉ subscribe
       >
         <StartAudio label="Bật âm thanh" />
-        <RoomAudioRenderer />
-        <ViewerVideoOnly />
+        <RoomAudioRenderer /> {/* ✅ Giải mã âm thanh đầu vào */}
+        <VideoConference />
       </LiveKitRoom>
-    </div>
-  );
-}
-
-// ✅ Sửa đúng API mới: dùng participant + publication
-function ViewerVideoOnly() {
-  const tracks = useTracks([
-    { source: Track.Source.Camera, withPublisher: true },
-  ]).filter((track) => !track.participant.isLocal);
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
-      {tracks.map((track) => (
-        <ParticipantTile
-          key={track.publication.trackSid}
-          participant={track.participant}
-          publication={track.publication}
-        />
-      ))}
     </div>
   );
 }
