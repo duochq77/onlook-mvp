@@ -1,49 +1,40 @@
-import { useEffect, useState } from 'react';
-import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
-import '@livekit/components-styles';
+import { useEffect, useRef, useState } from 'react'
+import { useRoom } from '@livekit/components-react'
+import { RoomAudioRenderer, startAudio } from 'livekit-client'
 
-export default function ViewerPage() {
-  const [token, setToken] = useState<string | null>(null);
+export function ViewerPage() {
+  const { connect, room } = useRoom()
+  const [joined, setJoined] = useState(false)
+  const clicked = useRef(false)
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const url = `https://onlook-token-server.onrender.com/api/viewer-token?room=a`;
-      const res = await fetch(url);
-      const data = await res.json();
-      setToken(data.token);
-    };
+    const joinRoom = async () => {
+      const resp = await fetch('/api/viewer-token?room=a') // nhớ thay 'a' nếu cần
+      const { token } = await resp.json()
+      await room.connect('wss://onlook-dev-zvm78p9y.livekit.cloud', token)
+      setJoined(true)
+    }
 
-    fetchToken();
-  }, []);
+    joinRoom()
+  }, [])
 
-  // ⚠️ Bắt buộc click mới phát được âm thanh
-  useEffect(() => {
-    const resumeAudio = () => {
-      if (typeof AudioContext !== 'undefined') {
-        const ctx = new AudioContext();
-        if (ctx.state === 'suspended') {
-          ctx.resume();
-        }
-      }
-    };
-    window.addEventListener('click', resumeAudio);
-    return () => window.removeEventListener('click', resumeAudio);
-  }, []);
-
-  if (!token) return <div>Đang lấy token xem livestream...</div>;
+  // fallback để kích hoạt audio
+  const handleUserGesture = () => {
+    if (!clicked.current) {
+      clicked.current = true
+      startAudio().then(() => {
+        console.log('🔊 AudioContext resumed')
+      }).catch(err => {
+        console.error('🚫 Failed to resume AudioContext', err)
+      })
+    }
+  }
 
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
-      connect
-      video
-      audio
-    >
-      <>
-        <RoomAudioRenderer />
-        <VideoConference />
-      </>
-    </LiveKitRoom>
-  );
+    <div onClick={handleUserGesture}>
+      <h1>Viewer Page</h1>
+      <RoomAudioRenderer room={room} />
+      {/* Bạn có thể thêm video render ở đây nếu cần */}
+    </div>
+  )
 }

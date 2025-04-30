@@ -1,48 +1,61 @@
-import { useEffect, useState } from 'react';
-import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
-import '@livekit/components-styles';
+import { useEffect, useRef, useState } from 'react'
+import {
+  Room,
+  RoomEvent,
+  createLocalVideoTrack,
+  createLocalAudioTrack,
+  Track,
+} from 'livekit-client'
 
-export default function SellerPage() {
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const url = `https://onlook-token-server.onrender.com/api/seller-token?room=a`;
-      const res = await fetch(url);
-      const data = await res.json();
-      setToken(data.token);
-    };
-
-    fetchToken();
-  }, []);
+export function SellerPage() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [joined, setJoined] = useState(false)
+  const roomRef = useRef<Room>()
 
   useEffect(() => {
-    const resumeAudio = () => {
-      if (typeof AudioContext !== 'undefined') {
-        const ctx = new AudioContext();
-        if (ctx.state === 'suspended') {
-          ctx.resume();
-        }
+    const connectToRoom = async () => {
+      const room = new Room()
+      roomRef.current = room
+
+      const resp = await fetch('/api/seller-token?room=a') // đổi room nếu cần
+      const { token } = await resp.json()
+
+      await room.connect('wss://onlook-dev-zvm78p9y.livekit.cloud', token)
+
+      const videoTrack = await createLocalVideoTrack()
+      const audioTrack = await createLocalAudioTrack()
+
+      await room.localParticipant.publishTrack(videoTrack)
+      await room.localParticipant.publishTrack(audioTrack)
+
+      // Hiển thị video preview
+      if (videoRef.current) {
+        videoTrack.attach(videoRef.current)
       }
-    };
-    window.addEventListener('click', resumeAudio);
-    return () => window.removeEventListener('click', resumeAudio);
-  }, []);
 
-  if (!token) return <div>Đang lấy token phát livestream...</div>;
+      // Lắng nghe lỗi (nếu cần)
+      room.on(RoomEvent.Disconnected, () => {
+        console.log('🚫 Disconnected from room')
+      })
+
+      setJoined(true)
+    }
+
+    connectToRoom()
+
+    return () => {
+      // Cleanup nếu rời trang
+      if (roomRef.current) {
+        roomRef.current.disconnect()
+      }
+    }
+  }, [])
 
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
-      connect
-      video
-      audio
-    >
-      <>
-        <RoomAudioRenderer />
-        <VideoConference />
-      </>
-    </LiveKitRoom>
-  );
+    <div>
+      <h1>Seller Page</h1>
+      <video ref={videoRef} autoPlay muted playsInline style={{ width: '100%' }} />
+      {!joined && <p>Đang kết nối...</p>}
+    </div>
+  )
 }
