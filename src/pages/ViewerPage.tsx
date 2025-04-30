@@ -40,20 +40,18 @@ export default function ViewerPage() {
       token={token}
       serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video
-      audio
+      video={false}
+      audio={false} // 🚫 không gửi micro
     >
-      <div>
-        <RoomAudioRenderer />
-        <VideoGrid />
-      </div>
+      <RoomAudioRenderer />
+      <VideoGrid />
     </LiveKitRoom>
   );
 }
 
 function VideoGrid() {
   const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .filter((track) => !track.participant.isLocal);
+    .filter((track) => !track.participant.isLocal); // chỉ thấy người bán
 
   return (
     <GridLayout tracks={tracks}>

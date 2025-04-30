@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   LiveKitRoom,
-  RoomAudioRenderer,
   ParticipantTile,
   GridLayout,
   useTracks,
@@ -31,21 +30,14 @@ export default function SellerPage() {
       video
       audio
     >
-      <div>
-        <RoomAudioRenderer />
-        <VideoGrid />
-      </div>
+      <VideoGrid />
     </LiveKitRoom>
   );
 }
 
 function VideoGrid() {
-  const tracks = useTracks([
-    { source: 'camera', withPlaceholder: true },
-    { source: 'audio' },
-  ]).filter(
-    (track) => track.source !== 'audio' || !track.participant.isLocal // chặn tiếng dội lại của chính mình
-  );
+  const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
+    .filter((track) => track.participant.isLocal); // chỉ hiển thị chính mình
 
   return (
     <GridLayout tracks={tracks}>
