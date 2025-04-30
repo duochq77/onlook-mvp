@@ -45,9 +45,11 @@ function VideoGrid() {
 
   return (
     <GridLayout tracks={tracks}>
-      {tracks.map((track: TrackReferenceOrPlaceholder) => (
-        <ParticipantTile key={track.participant.sid} trackRef={track} />
-      ))}
+      <div>
+        {tracks.map((track: TrackReferenceOrPlaceholder) => (
+          <ParticipantTile key={track.participant.sid} trackRef={track} />
+        ))}
+      </div>
     </GridLayout>
   );
 }
