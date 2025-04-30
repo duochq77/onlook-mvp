@@ -1,40 +1,46 @@
-import { useEffect, useRef, useState } from 'react'
-import { useRoom } from '@livekit/components-react'
-import { RoomAudioRenderer, startAudio } from 'livekit-client'
+import { useEffect, useState } from 'react'
+import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 
 export function ViewerPage() {
-  const { connect, room } = useRoom()
-  const [joined, setJoined] = useState(false)
-  const clicked = useRef(false)
+  const [token, setToken] = useState<string | null>(null)
+  const [audioStarted, setAudioStarted] = useState(false)
 
   useEffect(() => {
-    const joinRoom = async () => {
-      const resp = await fetch('/api/viewer-token?room=a') // nhớ thay 'a' nếu cần
-      const { token } = await resp.json()
-      await room.connect('wss://onlook-dev-zvm78p9y.livekit.cloud', token)
-      setJoined(true)
+    const fetchToken = async () => {
+      const resp = await fetch('/api/viewer-token?room=a')
+      const data = await resp.json()
+      setToken(data.token)
     }
-
-    joinRoom()
+    fetchToken()
   }, [])
 
-  // fallback để kích hoạt audio
-  const handleUserGesture = () => {
-    if (!clicked.current) {
-      clicked.current = true
-      startAudio().then(() => {
-        console.log('🔊 AudioContext resumed')
-      }).catch(err => {
-        console.error('🚫 Failed to resume AudioContext', err)
-      })
+  const tryStartAudio = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      stream.getTracks().forEach(track => track.stop()) // đóng ngay track giả
+      setAudioStarted(true)
+    } catch (err: any) {
+      console.error('Không thể khởi động âm thanh:', err)
     }
   }
 
+  if (!token) return <div>Đang kết nối tới phòng livestream...</div>
+
   return (
-    <div onClick={handleUserGesture}>
-      <h1>Viewer Page</h1>
-      <RoomAudioRenderer room={room} />
-      {/* Bạn có thể thêm video render ở đây nếu cần */}
-    </div>
+    <LiveKitRoom
+      token={token}
+      serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
+      connect={true}
+    >
+      <RoomAudioRenderer />
+      {!audioStarted && (
+        <button
+          onClick={tryStartAudio}
+          style={{ padding: '12px 20px', fontSize: '16px', marginTop: '20px' }}
+        >
+          🔊 Bấm để bật âm thanh
+        </button>
+      )}
+    </LiveKitRoom>
   )
 }
