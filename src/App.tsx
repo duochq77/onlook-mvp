@@ -8,16 +8,26 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a';
 
+  // ✅ URL token server từ Render.com
+  const apiBase = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
-    // ✅ LOCAL TESTING: dùng server.mjs port 3001
-    fetch(`http://localhost:3001/api/seller-token?room=${room}`)
+    // 🔐 Lấy token cho người bán
+    fetch(`${apiBase}/api/seller-token?room=${room}`)
       .then((res) => res.json())
-      .then((data) => setSellerToken(data.token))
+      .then((data) => {
+        console.log('Seller Token:', data.token);
+        setSellerToken(data.token);
+      })
       .catch((err) => console.error('Lỗi seller-token:', err));
 
-    fetch(`http://localhost:3001/api/viewer-token?room=${room}`)
+    // 👀 Lấy token cho người xem
+    fetch(`${apiBase}/api/viewer-token?room=${room}`)
       .then((res) => res.json())
-      .then((data) => setViewerToken(data.token))
+      .then((data) => {
+        console.log('Viewer Token:', data.token);
+        setViewerToken(data.token);
+      })
       .catch((err) => console.error('Lỗi viewer-token:', err));
   }, []);
 
@@ -39,15 +49,4 @@ function App() {
           path="/viewer"
           element={
             viewerToken ? (
-              <ViewerPage token={viewerToken} room={room} />
-            ) : (
-              <p>Đang kết nối tới phòng livestream...</p>
-            )
-          }
-        />
-      </Routes>
-    </Router>
-  );
-}
-
-export default App;
+              <ViewerPage token={viewerToken}

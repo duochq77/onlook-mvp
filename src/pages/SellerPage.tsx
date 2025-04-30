@@ -1,5 +1,8 @@
-import { LiveKitRoom, VideoConference } from '@livekit/components-react';
 import { useEffect } from 'react';
+import {
+  LiveKitRoom,
+  VideoConference,
+} from '@livekit/components-react';
 
 type Props = {
   token: string;
@@ -8,16 +11,19 @@ type Props = {
 
 function SellerPage({ token, room }: Props) {
   useEffect(() => {
-    console.log('Người bán đã vào phòng');
-    console.log('Token:', token);
-  }, []);
+    console.log('📡 Người bán đã vào phòng:', room);
+    console.log('🎟 Token:', token);
+  }, [room, token]);
 
   return (
-    <div style={{ height: '100vh', background: '#000' }}>
-      <p style={{ color: 'white' }}>Giao diện người bán – Phòng: {room}</p>
+    <div style={{ height: '100vh', backgroundColor: '#000' }}>
+      <p style={{ color: 'white', textAlign: 'center', marginTop: 10 }}>
+        🔴 ĐANG LIVESTREAM – Phòng: <strong>{room}</strong>
+      </p>
+
       <LiveKitRoom
         token={token}
-        serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
+        serverUrl={process.env.VITE_LIVEKIT_URL}
         connect={true}
         video={true}
         audio={true}
