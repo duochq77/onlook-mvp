@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import {
   LiveKitRoom,
-  ParticipantTile,
-  GridLayout,
-  useTracks,
-  TrackReferenceOrPlaceholder,
+  RoomAudioRenderer,
+  VideoConference,
 } from '@livekit/components-react';
+import '@livekit/components-styles';
 
 export default function SellerPage() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchToken = async () => {
-      const res = await fetch('https://onlook-token-server.onrender.com/api/seller-token?room=a');
+      const url = `https://onlook-token-server.onrender.com/api/seller-token?room=a`;
+      const res = await fetch(url);
       const data = await res.json();
       setToken(data.token);
     };
@@ -20,32 +20,38 @@ export default function SellerPage() {
     fetchToken();
   }, []);
 
-  if (!token) return <div>Đang lấy token phát livestream...</div>;
+  useEffect(() => {
+    const resumeAudio = () => {
+      if (typeof AudioContext !== 'undefined') {
+        const ctx = new AudioContext();
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+      }
+    };
+
+    window.addEventListener('click', resumeAudio);
+    return () => {
+      window.removeEventListener('click', resumeAudio);
+    };
+  }, []);
+
+  if (!token) {
+    return <div>Đang lấy token phát livestream...</div>;
+  }
 
   return (
     <LiveKitRoom
       token={token}
       serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video
-      audio
+      video={true}
+      audio={true}
     >
-      <VideoGrid />
+      <>
+        {/* Chỉ phát – không cần loa */}
+        <VideoConference />
+      </>
     </LiveKitRoom>
-  );
-}
-
-function VideoGrid() {
-  const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .filter((track) => track.participant.isLocal); // chỉ hiển thị chính mình
-
-  return (
-    <GridLayout tracks={tracks}>
-      <div>
-        {tracks.map((track: TrackReferenceOrPlaceholder) => (
-          <ParticipantTile key={track.participant.sid} trackRef={track} />
-        ))}
-      </div>
-    </GridLayout>
   );
 }
