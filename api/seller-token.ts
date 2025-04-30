@@ -15,8 +15,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const { room = 'a' } = req.query
     const identity = 'seller-' + Math.random().toString(36).substring(2, 10)
 
-    console.log('🟡 Tạo token cho:', identity)
-
     const at = new AccessToken(API_KEY, API_SECRET, {
       identity,
       name: identity,
@@ -30,11 +28,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     })
 
     const token = at.toJwt()
-    console.log('✅ Token tạo thành công:', token.slice(0, 20) + '...')
 
-    return res.status(200).json({ token })
+    res.status(200).json({ token })
   } catch (err: any) {
-    console.error('❌ Lỗi tạo token:', err?.message || err)
-    return res.status(500).json({ error: 'Không tạo được token' })
+    console.error('❌ Lỗi tạo token:', err)
+    res.status(500).json({ error: 'Không tạo được token' })
   }
 }
