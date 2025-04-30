@@ -1,38 +1,28 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { useEffect, useState } from 'react';
+import { Room } from 'livekit-client';
 
-type Props = {
+interface Props {
   token: string;
   room: string;
-};
+}
 
-export default function ViewerPage({ token, room }: Props) {
-  const [audioStarted, setAudioStarted] = useState(false);
+const ViewerPage = ({ token, room }: Props) => {
+  const serverUrl = process.env.VITE_LIVEKIT_URL;
 
-  useEffect(() => {
-    const resumeAudio = async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        setAudioStarted(true);
-      } catch (err) {
-        console.error('Không thể bật audio:', err);
-      }
-    };
-    resumeAudio();
-  }, []);
+  const onConnected = (room: Room) => {
+    console.log('👀 Viewer connected to room');
+  };
 
   return (
-    <div style={{ height: '100vh' }}>
-      {audioStarted && (
-        <LiveKitRoom
-          token={token}
-          serverUrl={import.meta.env.VITE_LIVEKIT_URL}
-          roomOptions={{ autoSubscribe: true }}
-          connect
-        >
-          <h1>Đang xem livestream...</h1>
-        </LiveKitRoom>
-      )}
-    </div>
+    <LiveKitRoom
+      token={token}
+      serverUrl={serverUrl}
+      connect={true}
+      onConnected={onConnected}
+    >
+      <h2>Đây là phòng xem livestream (Viewer)</h2>
+    </LiveKitRoom>
   );
-}
+};
+
+export default ViewerPage;

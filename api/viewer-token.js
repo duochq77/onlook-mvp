@@ -1,19 +1,18 @@
 const { AccessToken } = require('livekit-server-sdk');
 
 module.exports = async function handler(req, res) {
-  const API_KEY = process.env.LIVEKIT_API_KEY;
-  const API_SECRET = process.env.LIVEKIT_API_SECRET;
+  const apiKey = process.env.LIVEKIT_API_KEY;
+  const apiSecret = process.env.LIVEKIT_API_SECRET;
 
-  if (!API_KEY || !API_SECRET) {
-    console.error('❌ Thiếu biến môi trường LIVEKIT');
-    return res.status(500).json({ error: 'Missing environment variables' });
+  if (!apiKey || !apiSecret) {
+    return res.status(500).json({ error: 'Thiếu API Key hoặc Secret' });
   }
 
   try {
-    const { room = 'a' } = req.query;
+    const room = req.query.room || 'default';
     const identity = 'viewer-' + Math.random().toString(36).substring(2, 10);
 
-    const at = new AccessToken(API_KEY, API_SECRET, {
+    const at = new AccessToken(apiKey, apiSecret, {
       identity,
       name: identity,
     });
@@ -21,13 +20,13 @@ module.exports = async function handler(req, res) {
     at.addGrant({
       roomJoin: true,
       canSubscribe: true,
-      room: String(room),
+      room: room,
     });
 
     const token = at.toJwt();
     return res.status(200).json({ token });
   } catch (err) {
-    console.error('❌ Lỗi tạo token:', err);
-    return res.status(500).json({ error: 'Token creation failed' });
+    console.error('Lỗi khi tạo token:', err);
+    return res.status(500).json({ error: 'Không thể tạo token' });
   }
-}
+};

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SellerPage from './pages/SellerPage';
 import ViewerPage from './pages/ViewerPage';
@@ -9,12 +9,13 @@ function App() {
   const room = 'a';
 
   useEffect(() => {
-    fetch(`/api/seller-token?room=${room}`)
+    // ✅ LOCAL TESTING: dùng server.mjs port 3001
+    fetch(`http://localhost:3001/api/seller-token?room=${room}`)
       .then((res) => res.json())
       .then((data) => setSellerToken(data.token))
       .catch((err) => console.error('Lỗi seller-token:', err));
 
-    fetch(`/api/viewer-token?room=${room}`)
+    fetch(`http://localhost:3001/api/viewer-token?room=${room}`)
       .then((res) => res.json())
       .then((data) => setViewerToken(data.token))
       .catch((err) => console.error('Lỗi viewer-token:', err));
@@ -23,6 +24,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/viewer" />} />
         <Route
           path="/seller"
           element={

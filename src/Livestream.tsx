@@ -1,28 +1,28 @@
-import React from 'react';
 import { LiveKitRoom } from '@livekit/components-react';
+import { Room } from 'livekit-client';
 
-interface LivestreamProps {
+interface Props {
   token: string;
   room: string;
 }
 
-const Livestream: React.FC<LivestreamProps> = ({ token, room }) => {
+const ViewerPage = ({ token, room }: Props) => {
+  const serverUrl = process.env.VITE_LIVEKIT_URL;
+
+  const onConnected = (room: Room) => {
+    console.log('👀 Viewer connected to room');
+  };
+
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={import.meta.env.VITE_LIVEKIT_URL}
-      room={room}
+      serverUrl={serverUrl}
       connect={true}
-      video={true}
-      audio={true}
-      onError={(err) => {
-        console.error('Lỗi khi kết nối LiveKit:', err);
-      }}
-      style={{ height: '100vh' }}
+      onConnected={onConnected}
     >
-      {/* Các thành phần bên trong phòng có thể thêm ở đây nếu muốn */}
+      <h2>Đây là phòng xem livestream (Viewer)</h2>
     </LiveKitRoom>
   );
 };
 
-export default Livestream;
+export default ViewerPage;

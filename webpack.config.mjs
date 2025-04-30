@@ -1,3 +1,4 @@
+// ✅ webpack.config.mjs
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import Dotenv from 'dotenv-webpack';
@@ -28,7 +29,7 @@ export default {
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
-    new Dotenv(),
+    new Dotenv({ systemvars: true }), // ✅ Đảm bảo process.env hoạt động
   ],
   devServer: {
     historyApiFallback: true,
