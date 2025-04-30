@@ -17,6 +17,7 @@ export default function SellerPage() {
       const data = await res.json();
       setToken(data.token);
     };
+
     fetchToken();
   }, []);
 
@@ -39,8 +40,12 @@ export default function SellerPage() {
 }
 
 function VideoGrid() {
-  const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .filter((track) => track.participant.isLocal);
+  const tracks = useTracks([
+    { source: 'camera', withPlaceholder: true },
+    { source: 'audio' },
+  ]).filter(
+    (track) => track.source !== 'audio' || !track.participant.isLocal // chặn tiếng dội lại của chính mình
+  );
 
   return (
     <GridLayout tracks={tracks}>
