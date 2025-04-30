@@ -5,18 +5,7 @@ import '@livekit/components-styles';
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const url = `https://onlook-token-server.onrender.com/api/viewer-token?room=a`;
-      const res = await fetch(url);
-      const data = await res.json();
-      setToken(data.token);
-    };
-
-    fetchToken();
-  }, []);
-
-  // ✅ Ép AudioContext được khởi động khi người dùng click vào trang
+  // ✅ Bắt sự kiện người dùng click để resume AudioContext
   useEffect(() => {
     const resumeAudio = () => {
       if (typeof AudioContext !== 'undefined') {
@@ -33,7 +22,21 @@ export default function ViewerPage() {
     };
   }, []);
 
-  if (!token) return <div>Đang lấy token xem livestream...</div>;
+  // ✅ Lấy token xem livestream
+  useEffect(() => {
+    const fetchToken = async () => {
+      const url = `https://onlook-token-server.onrender.com/api/viewer-token?room=a`;
+      const res = await fetch(url);
+      const data = await res.json();
+      setToken(data.token);
+    };
+
+    fetchToken();
+  }, []);
+
+  if (!token) {
+    return <div>Đang lấy token xem livestream...</div>;
+  }
 
   return (
     <LiveKitRoom
