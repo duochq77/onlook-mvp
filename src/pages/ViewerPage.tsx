@@ -11,6 +11,7 @@ import {
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
 
+  // 👇 Bắt buộc để âm thanh hoạt động trên trình duyệt
   useEffect(() => {
     const resumeAudio = () => {
       if (typeof AudioContext !== 'undefined') {
@@ -20,16 +21,19 @@ export default function ViewerPage() {
         }
       }
     };
+
     window.addEventListener('click', resumeAudio);
     return () => window.removeEventListener('click', resumeAudio);
   }, []);
 
+  // 👇 Lấy token
   useEffect(() => {
     const fetchToken = async () => {
       const res = await fetch('https://onlook-token-server.onrender.com/api/viewer-token?room=a');
       const data = await res.json();
       setToken(data.token);
     };
+
     fetchToken();
   }, []);
 
@@ -40,10 +44,10 @@ export default function ViewerPage() {
       token={token}
       serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video={false}
-      audio={false} // 🚫 không gửi micro
+      video={false} // ❌ Viewer không gửi video
+      audio={false} // ❌ Viewer không gửi mic
     >
-      <RoomAudioRenderer />
+      <RoomAudioRenderer /> {/* 👂 Nhận âm thanh */}
       <VideoGrid />
     </LiveKitRoom>
   );
@@ -51,7 +55,7 @@ export default function ViewerPage() {
 
 function VideoGrid() {
   const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .filter((track) => !track.participant.isLocal); // chỉ thấy người bán
+    .filter((track) => !track.participant.isLocal); // 👀 Chỉ xem người khác (seller)
 
   return (
     <GridLayout tracks={tracks}>
