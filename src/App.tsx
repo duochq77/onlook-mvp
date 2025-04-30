@@ -8,27 +8,27 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a';
 
-  // ✅ URL token server từ Render.com
+  // ✅ Lấy domain API từ biến môi trường
   const apiBase = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    // 🔐 Lấy token cho người bán
+    // 🔐 Lấy token người bán
     fetch(`${apiBase}/api/seller-token?room=${room}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('Seller Token:', data.token);
+        console.log('📦 Seller Token:', data.token);
         setSellerToken(data.token);
       })
-      .catch((err) => console.error('Lỗi seller-token:', err));
+      .catch((err) => console.error('❌ Lỗi seller-token:', err));
 
-    // 👀 Lấy token cho người xem
+    // 👀 Lấy token người xem
     fetch(`${apiBase}/api/viewer-token?room=${room}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('Viewer Token:', data.token);
+        console.log('📦 Viewer Token:', data.token);
         setViewerToken(data.token);
       })
-      .catch((err) => console.error('Lỗi viewer-token:', err));
+      .catch((err) => console.error('❌ Lỗi viewer-token:', err));
   }, []);
 
   return (
@@ -41,7 +41,7 @@ function App() {
             sellerToken ? (
               <SellerPage token={sellerToken} room={room} />
             ) : (
-              <p>Đang kết nối tới phòng livestream...</p>
+              <p>🔄 Đang lấy token người bán...</p>
             )
           }
         />
@@ -49,4 +49,15 @@ function App() {
           path="/viewer"
           element={
             viewerToken ? (
-              <ViewerPage token={viewerToken}
+              <ViewerPage token={viewerToken} room={room} />
+            ) : (
+              <p>🔄 Đang lấy token người xem...</p>
+            )
+          }
+        />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
