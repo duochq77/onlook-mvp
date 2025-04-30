@@ -1,8 +1,8 @@
 const { AccessToken } = require('livekit-server-sdk');
 
 module.exports = async function handler(req, res) {
-  const apiKey = process.env.LIVEKIT_API_KEY;
-  const apiSecret = process.env.LIVEKIT_API_SECRET;
+  const apiKey = process.env.VITE_LIVEKIT_API_KEY;
+  const apiSecret = process.env.VITE_LIVEKIT_API_SECRET;
 
   if (!apiKey || !apiSecret) {
     return res.status(500).json({ error: 'Thiếu API Key hoặc Secret' });
