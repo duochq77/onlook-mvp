@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { LiveKitRoom } from '@livekit/components-react';
-import '@livekit/components-styles';
 
 export default function SellerPage() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchToken = async () => {
-      const url = `https://onlook-token-server.onrender.com/api/seller-token?room=a`;
-      const res = await fetch(url);
+      const res = await fetch('https://onlook-token-server.onrender.com/api/seller-token?room=a');
       const data = await res.json();
       setToken(data.token);
     };
