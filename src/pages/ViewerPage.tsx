@@ -1,4 +1,4 @@
-import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
+import { LiveKitRoom, RoomAudioRenderer, StartAudio, VideoConference } from '@livekit/components-react';
 import { useEffect } from 'react';
 
 type Props = {
@@ -20,7 +20,8 @@ function ViewerPage({ token, room }: Props) {
         video={false}
         audio={false}
       >
-        <RoomAudioRenderer />
+        <StartAudio />
+        <RoomAudioRenderer /> {/* ✅ Giúp nghe được người bán */}
         <VideoConference />
       </LiveKitRoom>
     </div>

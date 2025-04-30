@@ -1,4 +1,4 @@
-import { LiveKitRoom, VideoConference } from '@livekit/components-react';
+import { LiveKitRoom, StartAudio, StartMediaButton, VideoConference } from '@livekit/components-react';
 import { useEffect } from 'react';
 
 type Props = {
@@ -20,8 +20,10 @@ function SellerPage({ token, room }: Props) {
         video={true}
         audio={true}
       >
+        <StartAudio />
+        <StartMediaButton />
         <VideoConference />
-        {/* ❌ Không nghe tiếng mình */}
+        {/* ❌ Không render RoomAudioRenderer để không nghe chính mình */}
       </LiveKitRoom>
     </div>
   );
