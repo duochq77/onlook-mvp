@@ -1,15 +1,10 @@
 import { useEffect, useState } from 'react';
-import {
-  LiveKitRoom,
-  RoomAudioRenderer,
-  VideoConference,
-} from '@livekit/components-react';
+import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
 import '@livekit/components-styles';
 
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
 
-  // Lấy token từ server
   useEffect(() => {
     const fetchToken = async () => {
       const url = `https://onlook-token-server.onrender.com/api/viewer-token?room=a`;
@@ -21,7 +16,7 @@ export default function ViewerPage() {
     fetchToken();
   }, []);
 
-  // Ép AudioContext resume sau click
+  // ⚠️ Bắt buộc click mới phát được âm thanh
   useEffect(() => {
     const resumeAudio = () => {
       if (typeof AudioContext !== 'undefined') {
@@ -32,14 +27,10 @@ export default function ViewerPage() {
       }
     };
     window.addEventListener('click', resumeAudio);
-    return () => {
-      window.removeEventListener('click', resumeAudio);
-    };
+    return () => window.removeEventListener('click', resumeAudio);
   }, []);
 
-  if (!token) {
-    return <div>Đang lấy token xem livestream...</div>;
-  }
+  if (!token) return <div>Đang lấy token xem livestream...</div>;
 
   return (
     <LiveKitRoom
@@ -48,10 +39,6 @@ export default function ViewerPage() {
       connect
       video
       audio
-      onConnected={(room) => {
-        room.localParticipant.setMicrophoneEnabled(false);
-        room.localParticipant.setCameraEnabled(false);
-      }}
     >
       <>
         <RoomAudioRenderer />

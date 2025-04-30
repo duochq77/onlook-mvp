@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  LiveKitRoom,
-  RoomAudioRenderer,
-  VideoConference,
-} from '@livekit/components-react';
+import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
 import '@livekit/components-styles';
 
 export default function SellerPage() {
@@ -29,27 +25,22 @@ export default function SellerPage() {
         }
       }
     };
-
     window.addEventListener('click', resumeAudio);
-    return () => {
-      window.removeEventListener('click', resumeAudio);
-    };
+    return () => window.removeEventListener('click', resumeAudio);
   }, []);
 
-  if (!token) {
-    return <div>Đang lấy token phát livestream...</div>;
-  }
+  if (!token) return <div>Đang lấy token phát livestream...</div>;
 
   return (
     <LiveKitRoom
       token={token}
       serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video={true}
-      audio={true}
+      video
+      audio
     >
       <>
-        {/* Chỉ phát – không cần loa */}
+        <RoomAudioRenderer />
         <VideoConference />
       </>
     </LiveKitRoom>
