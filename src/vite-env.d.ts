@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_LIVEKIT_URL: string;
-  readonly VITE_API_BASE_URL: string;
+  readonly VITE_API_BASE_URL: string; // ✅ thêm dòng này
 }
 
 interface ImportMeta {
