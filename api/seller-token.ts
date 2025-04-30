@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-const { AccessToken } = require('livekit-server-sdk')
+const livekit = require('livekit-server-sdk')
+const AccessToken = livekit.AccessToken
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const API_KEY = process.env.LIVEKIT_API_KEY
