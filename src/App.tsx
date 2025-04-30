@@ -8,11 +8,12 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a';
 
-  // ✅ Lấy domain API từ biến môi trường
-  const apiBase = import.meta.env.VITE_API_BASE_URL;
+  const apiBase = process.env.VITE_API_BASE_URL;
+  if (!apiBase) {
+    throw new Error('❌ Thiếu biến môi trường VITE_API_BASE_URL');
+  }
 
   useEffect(() => {
-    // 🔐 Lấy token người bán
     fetch(`${apiBase}/api/seller-token?room=${room}`)
       .then((res) => res.json())
       .then((data) => {
@@ -21,7 +22,6 @@ function App() {
       })
       .catch((err) => console.error('❌ Lỗi seller-token:', err));
 
-    // 👀 Lấy token người xem
     fetch(`${apiBase}/api/viewer-token?room=${room}`)
       .then((res) => res.json())
       .then((data) => {
