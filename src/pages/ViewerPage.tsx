@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
-import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
+import {
+  LiveKitRoom,
+  RoomAudioRenderer,
+  VideoConference,
+} from '@livekit/components-react';
 import '@livekit/components-styles';
 
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
-  const [started, setStarted] = useState(false);
 
+  // Lấy token từ server
   useEffect(() => {
     const fetchToken = async () => {
-      const res = await fetch(`https://onlook-token-server.onrender.com/api/viewer-token?room=a`);
+      const url = `https://onlook-token-server.onrender.com/api/viewer-token?room=a`;
+      const res = await fetch(url);
       const data = await res.json();
       setToken(data.token);
     };
@@ -16,33 +21,24 @@ export default function ViewerPage() {
     fetchToken();
   }, []);
 
-  const handleStart = async () => {
-    // ✅ Ép AudioContext resume trước khi vào room
-    try {
+  // Ép AudioContext resume sau click
+  useEffect(() => {
+    const resumeAudio = () => {
       if (typeof AudioContext !== 'undefined') {
         const ctx = new AudioContext();
         if (ctx.state === 'suspended') {
-          await ctx.resume();
+          ctx.resume();
         }
       }
-    } catch (e) {
-      console.warn('Không thể resume AudioContext:', e);
-    }
-
-    setStarted(true);
-  };
+    };
+    window.addEventListener('click', resumeAudio);
+    return () => {
+      window.removeEventListener('click', resumeAudio);
+    };
+  }, []);
 
   if (!token) {
     return <div>Đang lấy token xem livestream...</div>;
-  }
-
-  if (!started) {
-    return (
-      <div style={{ padding: '2rem' }}>
-        <h2>🎬 Nhấn để bắt đầu xem livestream</h2>
-        <button onClick={handleStart}>Bắt đầu xem</button>
-      </div>
-    );
   }
 
   return (
@@ -53,7 +49,8 @@ export default function ViewerPage() {
       video
       audio
       onConnected={(room) => {
-        room.localParticipant.setMicrophoneEnabled(false); // ✅ Không bật mic bên Viewer
+        room.localParticipant.setMicrophoneEnabled(false);
+        room.localParticipant.setCameraEnabled(false);
       }}
     >
       <>
