@@ -20,10 +20,10 @@ function SellerPage({ token, room }: Props) {
         video={true}
         audio={true}
       >
-        <StartAudio />
+        <StartAudio label="Bật âm thanh" />
         <StartMediaButton />
         <VideoConference />
-        {/* ❌ Không render RoomAudioRenderer để không nghe chính mình */}
+        {/* ❌ Không nghe chính mình */}
       </LiveKitRoom>
     </div>
   );

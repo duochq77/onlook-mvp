@@ -4,8 +4,8 @@ import {
   StartAudio,
   ParticipantTile,
   useTracks,
-  Track,
 } from '@livekit/components-react';
+import { Track } from 'livekit-client'; // ✅ Sửa lỗi import Track
 import { useEffect } from 'react';
 
 type Props = {
@@ -24,30 +24,28 @@ function ViewerPage({ token, room }: Props) {
         token={token}
         serverUrl={process.env.VITE_LIVEKIT_URL}
         connect={true}
-        video={false} // ❌ Viewer không quay chính mình
+        video={false}
         audio={false}
       >
         <StartAudio label="Bật âm thanh" />
-        <RoomAudioRenderer /> {/* ✅ Để người xem nghe được người bán */}
-        <ViewerVideoOnly />    {/* ✅ Hiển thị video của người bán */}
+        <RoomAudioRenderer />
+        <ViewerVideoOnly />
       </LiveKitRoom>
     </div>
   );
 }
 
-// 🎥 Chỉ hiển thị video của người khác (không phải chính mình)
 function ViewerVideoOnly() {
   const tracks = useTracks([
     { source: Track.Source.Camera, withPublisher: true }
-  ]).filter((track) => track.participant.isLocal === false);
+  ]).filter((track) => !track.participant.isLocal);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
-      {tracks.map(({ participant, publication }) => (
+      {tracks.map((track) => (
         <ParticipantTile
-          key={participant.identity}
-          participant={participant}
-          publication={publication}
+          key={track.publication.trackSid}
+          track={track}
         />
       ))}
     </div>
