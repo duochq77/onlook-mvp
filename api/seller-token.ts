@@ -1,18 +1,21 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { AccessToken } from 'livekit-server-sdk'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
-const API_KEY = process.env.LIVEKIT_API_KEY
-const API_SECRET = process.env.LIVEKIT_API_SECRET
+const { AccessToken } = require('livekit-server-sdk')
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const API_KEY = process.env.LIVEKIT_API_KEY
+  const API_SECRET = process.env.LIVEKIT_API_SECRET
+
   if (!API_KEY || !API_SECRET) {
-    console.error('❌ Thiếu API_KEY hoặc API_SECRET trong biến môi trường')
-    return res.status(500).json({ error: 'Missing API credentials' })
+    console.error('❌ Thiếu LIVEKIT_API_KEY hoặc LIVEKIT_API_SECRET')
+    return res.status(500).json({ error: 'Thiếu biến môi trường LIVEKIT' })
   }
 
   try {
     const { room = 'a' } = req.query
     const identity = 'seller-' + Math.random().toString(36).substring(2, 10)
+
+    console.log('🟡 Tạo token cho:', identity)
 
     const at = new AccessToken(API_KEY, API_SECRET, {
       identity,
@@ -27,9 +30,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     })
 
     const token = at.toJwt()
+    console.log('✅ Token tạo thành công:', token.slice(0, 20) + '...')
+
     return res.status(200).json({ token })
-  } catch (err) {
-    console.error('❌ Lỗi tạo token:', err)
-    return res.status(500).json({ error: 'Internal Server Error' })
+  } catch (err: any) {
+    console.error('❌ Lỗi tạo token:', err?.message || err)
+    return res.status(500).json({ error: 'Không tạo được token' })
   }
 }
