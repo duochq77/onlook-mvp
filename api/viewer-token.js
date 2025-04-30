@@ -1,6 +1,6 @@
 const { AccessToken } = require('livekit-server-sdk');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const API_KEY = process.env.LIVEKIT_API_KEY;
   const API_SECRET = process.env.LIVEKIT_API_SECRET;
 
