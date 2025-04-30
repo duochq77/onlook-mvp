@@ -1,4 +1,4 @@
-import { LiveKitRoom, VideoConference } from '@livekit/components-react';
+import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
 import { useEffect } from 'react';
 
 type Props = {
@@ -11,23 +11,16 @@ function ViewerPage({ token, room }: Props) {
     console.log('👀 Người xem đã vào phòng:', room);
   }, [room]);
 
-  const serverUrl = process.env.VITE_LIVEKIT_URL;
-  if (!serverUrl) {
-    throw new Error('❌ Thiếu biến môi trường VITE_LIVEKIT_URL');
-  }
-
   return (
-    <div style={{ height: '100vh', backgroundColor: '#111' }}>
-      <p style={{ color: 'white', textAlign: 'center', marginTop: 10 }}>
-        📺 ĐANG XEM LIVESTREAM – Phòng: <strong>{room}</strong>
-      </p>
+    <div style={{ height: '100vh' }}>
       <LiveKitRoom
         token={token}
-        serverUrl={serverUrl}
+        serverUrl={process.env.VITE_LIVEKIT_URL}
         connect={true}
-        video={true}
-        audio={true}
+        video={false}
+        audio={false}
       >
+        <RoomAudioRenderer />
         <VideoConference />
       </LiveKitRoom>
     </div>

@@ -11,24 +11,17 @@ function SellerPage({ token, room }: Props) {
     console.log('📡 Người bán đã vào phòng:', room);
   }, [room]);
 
-  const serverUrl = process.env.VITE_LIVEKIT_URL;
-  if (!serverUrl) {
-    throw new Error('❌ Thiếu biến môi trường VITE_LIVEKIT_URL');
-  }
-
   return (
-    <div style={{ height: '100vh', backgroundColor: '#000' }}>
-      <p style={{ color: 'white', textAlign: 'center', marginTop: 10 }}>
-        🔴 ĐANG LIVESTREAM – Phòng: <strong>{room}</strong>
-      </p>
+    <div style={{ height: '100vh' }}>
       <LiveKitRoom
         token={token}
-        serverUrl={serverUrl}
+        serverUrl={process.env.VITE_LIVEKIT_URL}
         connect={true}
         video={true}
         audio={true}
       >
         <VideoConference />
+        {/* ❌ Không nghe tiếng mình */}
       </LiveKitRoom>
     </div>
   );
