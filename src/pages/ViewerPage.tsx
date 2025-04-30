@@ -11,29 +11,40 @@ import {
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
 
-  // 👇 Bắt buộc để âm thanh hoạt động trên trình duyệt
+  // ✅ Fix lỗi chặn âm thanh: resume AudioContext khi người dùng tương tác
   useEffect(() => {
     const resumeAudio = () => {
-      if (typeof AudioContext !== 'undefined') {
-        const ctx = new AudioContext();
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
         if (ctx.state === 'suspended') {
-          ctx.resume();
+          ctx.resume().then(() => {
+            console.log('🔊 AudioContext resumed!');
+          }).catch((err) => {
+            console.warn('❌ Resume AudioContext failed:', err);
+          });
         }
+      } catch (err) {
+        console.warn('⚠️ Không tạo được AudioContext:', err);
       }
     };
 
     window.addEventListener('click', resumeAudio);
-    return () => window.removeEventListener('click', resumeAudio);
+    window.addEventListener('keydown', resumeAudio);
+    setTimeout(resumeAudio, 2000); // tự động gọi lại sau 2s nếu cần
+
+    return () => {
+      window.removeEventListener('click', resumeAudio);
+      window.removeEventListener('keydown', resumeAudio);
+    };
   }, []);
 
-  // 👇 Lấy token
+  // ✅ Gọi API để lấy token xem
   useEffect(() => {
     const fetchToken = async () => {
       const res = await fetch('https://onlook-token-server.onrender.com/api/viewer-token?room=a');
       const data = await res.json();
       setToken(data.token);
     };
-
     fetchToken();
   }, []);
 
@@ -44,10 +55,10 @@ export default function ViewerPage() {
       token={token}
       serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video={false} // ❌ Viewer không gửi video
-      audio={false} // ❌ Viewer không gửi mic
+      video={false} // Viewer không gửi video
+      audio={false} // Viewer không gửi mic
     >
-      <RoomAudioRenderer /> {/* 👂 Nhận âm thanh */}
+      <RoomAudioRenderer /> {/* Nghe âm thanh từ seller */}
       <VideoGrid />
     </LiveKitRoom>
   );
@@ -55,7 +66,7 @@ export default function ViewerPage() {
 
 function VideoGrid() {
   const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .filter((track) => !track.participant.isLocal); // 👀 Chỉ xem người khác (seller)
+    .filter((track) => !track.participant.isLocal); // Chỉ hiện video của người khác
 
   return (
     <GridLayout tracks={tracks}>
