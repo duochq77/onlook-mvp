@@ -31,18 +31,17 @@ export default function SellerPage() {
       video
       audio
     >
-      <>
+      <div>
         <RoomAudioRenderer />
         <VideoGrid />
-      </>
+      </div>
     </LiveKitRoom>
   );
 }
 
 function VideoGrid() {
-  const tracks = useTracks([
-    { source: 'camera', withPlaceholder: true },
-  ]).sort((a, b) => (a.participant.isLocal ? -1 : 1));
+  const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
+    .sort((a, b) => (a.participant.isLocal ? -1 : 1));
 
   return (
     <GridLayout tracks={tracks}>
