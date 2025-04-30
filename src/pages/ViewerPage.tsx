@@ -5,7 +5,7 @@ import {
   ParticipantTile,
   useTracks,
 } from '@livekit/components-react';
-import { Track } from 'livekit-client'; // ✅ Sửa lỗi import Track
+import { Track } from 'livekit-client';
 import { useEffect } from 'react';
 
 type Props = {
@@ -35,9 +35,10 @@ function ViewerPage({ token, room }: Props) {
   );
 }
 
+// ✅ Sửa đúng API mới: dùng participant + publication
 function ViewerVideoOnly() {
   const tracks = useTracks([
-    { source: Track.Source.Camera, withPublisher: true }
+    { source: Track.Source.Camera, withPublisher: true },
   ]).filter((track) => !track.participant.isLocal);
 
   return (
@@ -45,7 +46,8 @@ function ViewerVideoOnly() {
       {tracks.map((track) => (
         <ParticipantTile
           key={track.publication.trackSid}
-          track={track}
+          participant={track.participant}
+          publication={track.publication}
         />
       ))}
     </div>
