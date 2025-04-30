@@ -11,9 +11,9 @@ import '@livekit/components-styles';
 
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
-  const [started, setStarted] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  const handleStart = async () => {
+  const handleClick = async () => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       if (ctx.state === 'suspended') {
@@ -21,27 +21,29 @@ export default function ViewerPage() {
         console.log('🔊 AudioContext resumed');
       }
     } catch (err) {
-      console.warn('❌ Resume AudioContext failed:', err);
+      console.warn('❌ Failed to resume AudioContext', err);
     }
 
     const res = await fetch('https://onlook-token-server.onrender.com/api/viewer-token?room=a');
     const data = await res.json();
     setToken(data.token);
-    setStarted(true);
+    setReady(true);
   };
 
-  if (!started) {
+  if (!ready) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>🎥 Xem livestream Onlook</h2>
-        <button onClick={handleStart} style={{ padding: '1rem 2rem', fontSize: '1.2rem' }}>
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <h2>🎥 Xem Livestream</h2>
+        <button onClick={handleClick} style={{ padding: '1rem 2rem', fontSize: '1.2rem' }}>
           ▶️ Bắt đầu xem
         </button>
       </div>
     );
   }
 
-  if (!token) return <div>🔄 Đang lấy token xem livestream...</div>;
+  if (!token) {
+    return <div>🔄 Đang lấy token...</div>;
+  }
 
   return (
     <LiveKitRoom
@@ -49,7 +51,7 @@ export default function ViewerPage() {
       serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
       video={false}
-      audio={false}
+      audio={true}
     >
       <RoomAudioRenderer />
       <VideoGrid />
@@ -58,16 +60,15 @@ export default function ViewerPage() {
 }
 
 function VideoGrid() {
-  const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .filter((track) => !track.participant.isLocal);
+  const tracks = useTracks([{ source: 'camera', withPlaceholder: true }]).filter(
+    (t) => !t.participant.isLocal
+  );
 
   return (
     <GridLayout tracks={tracks}>
-      <div>
-        {tracks.map((track: TrackReferenceOrPlaceholder) => (
-          <ParticipantTile key={track.participant.sid} trackRef={track} />
-        ))}
-      </div>
+      {tracks.map((track: TrackReferenceOrPlaceholder) => (
+        <ParticipantTile key={track.participant.sid} trackRef={track} />
+      ))}
     </GridLayout>
   );
 }
