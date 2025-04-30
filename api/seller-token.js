@@ -5,8 +5,7 @@ module.exports = async function handler(req, res) {
   const API_SECRET = process.env.LIVEKIT_API_SECRET;
 
   if (!API_KEY || !API_SECRET) {
-    console.error('❌ Thiếu biến môi trường LIVEKIT');
-    return res.status(500).json({ error: 'Missing environment variables' });
+    return res.status(500).json({ error: 'Thiếu thông tin LiveKit' });
   }
 
   try {
@@ -22,13 +21,13 @@ module.exports = async function handler(req, res) {
       roomJoin: true,
       canPublish: true,
       canPublishData: true,
-      room: String(room),
+      room: room,
     });
 
     const token = at.toJwt();
     return res.status(200).json({ token });
   } catch (err) {
-    console.error('❌ Lỗi tạo token:', err);
+    console.error('Lỗi tạo token:', err);
     return res.status(500).json({ error: 'Token creation failed' });
   }
 }
