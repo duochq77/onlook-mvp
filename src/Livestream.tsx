@@ -1,4 +1,5 @@
 import { LiveKitRoom } from '@livekit/components-react';
+import '@livekit/components-styles';
 import { Room } from 'livekit-client';
 
 interface Props {
@@ -6,23 +7,17 @@ interface Props {
   room: string;
 }
 
-const ViewerPage = ({ token, room }: Props) => {
-  const serverUrl = process.env.VITE_LIVEKIT_URL;
-
-  const onConnected = (room: Room) => {
-    console.log('👀 Viewer connected to room');
-  };
-
+export default function Livestream({ token, room }: Props) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={serverUrl}
+      serverUrl={process.env.VITE_LIVEKIT_URL}
       connect={true}
-      onConnected={onConnected}
+      onConnected={() => {
+        console.log('Đã kết nối vào phòng');
+      }}
     >
-      <h2>Đây là phòng xem livestream (Viewer)</h2>
+      <h1>Livestream đang diễn ra tại phòng: {room}</h1>
     </LiveKitRoom>
   );
-};
-
-export default ViewerPage;
+}

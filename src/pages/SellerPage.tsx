@@ -1,31 +1,31 @@
-import { LiveKitRoom } from '@livekit/components-react';
+import { LiveKitRoom, VideoConference } from '@livekit/components-react';
 import { useEffect } from 'react';
-import { RoomEvent, Room } from 'livekit-client';
 
-interface Props {
+type Props = {
   token: string;
   room: string;
-}
+};
 
-const SellerPage = ({ token, room }: Props) => {
-  const serverUrl = process.env.VITE_LIVEKIT_URL;
-
-  const onConnected = (room: Room) => {
-    console.log('✅ Connected to LiveKit room');
-    room.localParticipant.setCameraEnabled(true);
-    room.localParticipant.setMicrophoneEnabled(true);
-  };
+function SellerPage({ token, room }: Props) {
+  useEffect(() => {
+    console.log('Người bán đã vào phòng');
+    console.log('Token:', token);
+  }, []);
 
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl={serverUrl}
-      connect={true}
-      onConnected={onConnected}
-    >
-      <h2>Đây là phòng phát trực tiếp (Seller)</h2>
-    </LiveKitRoom>
+    <div style={{ height: '100vh', background: '#000' }}>
+      <p style={{ color: 'white' }}>Giao diện người bán – Phòng: {room}</p>
+      <LiveKitRoom
+        token={token}
+        serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
+        connect={true}
+        video={true}
+        audio={true}
+      >
+        <VideoConference />
+      </LiveKitRoom>
+    </div>
   );
-};
+}
 
 export default SellerPage;

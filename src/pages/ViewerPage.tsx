@@ -1,28 +1,28 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { Room } from 'livekit-client';
+import { useEffect } from 'react';
 
-interface Props {
+type Props = {
   token: string;
   room: string;
-}
+};
 
-const ViewerPage = ({ token, room }: Props) => {
-  const serverUrl = process.env.VITE_LIVEKIT_URL;
-
-  const onConnected = (room: Room) => {
-    console.log('👀 Viewer connected to room');
-  };
+function ViewerPage({ token, room }: Props) {
+  useEffect(() => {
+    console.log('Người xem đã vào phòng');
+  }, []);
 
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl={serverUrl}
-      connect={true}
-      onConnected={onConnected}
-    >
-      <h2>Đây là phòng xem livestream (Viewer)</h2>
-    </LiveKitRoom>
+    <div style={{ height: '100vh' }}>
+      <p>Giao diện người xem – Phòng: {room}</p>
+      <LiveKitRoom
+        token={token} // ✅ truyền đúng chuỗi token
+        serverUrl={process.env.LIVEKIT_URL}
+        connect={true}
+      >
+        <p>Đang xem livestream...</p>
+      </LiveKitRoom>
+    </div>
   );
-};
+}
 
 export default ViewerPage;
