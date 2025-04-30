@@ -17,7 +17,6 @@ export default function SellerPage() {
       const data = await res.json();
       setToken(data.token);
     };
-
     fetchToken();
   }, []);
 
@@ -41,7 +40,7 @@ export default function SellerPage() {
 
 function VideoGrid() {
   const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .sort((a, b) => (a.participant.isLocal ? -1 : 1));
+    .filter((track) => track.participant.isLocal);
 
   return (
     <GridLayout tracks={tracks}>

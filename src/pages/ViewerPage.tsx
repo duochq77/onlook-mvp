@@ -11,7 +11,6 @@ import {
 export default function ViewerPage() {
   const [token, setToken] = useState<string | null>(null);
 
-  // 🎧 Ép trình duyệt resume AudioContext khi người dùng click
   useEffect(() => {
     const resumeAudio = () => {
       if (typeof AudioContext !== 'undefined') {
@@ -21,21 +20,16 @@ export default function ViewerPage() {
         }
       }
     };
-
     window.addEventListener('click', resumeAudio);
-    return () => {
-      window.removeEventListener('click', resumeAudio);
-    };
+    return () => window.removeEventListener('click', resumeAudio);
   }, []);
 
-  // 🔑 Lấy token từ backend
   useEffect(() => {
     const fetchToken = async () => {
       const res = await fetch('https://onlook-token-server.onrender.com/api/viewer-token?room=a');
       const data = await res.json();
       setToken(data.token);
     };
-
     fetchToken();
   }, []);
 
@@ -59,7 +53,7 @@ export default function ViewerPage() {
 
 function VideoGrid() {
   const tracks = useTracks([{ source: 'camera', withPlaceholder: true }])
-    .sort((a, b) => (a.participant.isLocal ? -1 : 1));
+    .filter((track) => !track.participant.isLocal);
 
   return (
     <GridLayout tracks={tracks}>
