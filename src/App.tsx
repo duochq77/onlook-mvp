@@ -6,15 +6,12 @@ import ViewerPage from './pages/ViewerPage';
 function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null);
   const [viewerToken, setViewerToken] = useState<string | null>(null);
-  const room = 'a';
+  const room = 'a'; // bạn có thể thay thành seller_{userId} sau này
 
-  const apiBase = process.env.VITE_API_BASE_URL;
-  if (!apiBase) {
-    throw new Error('❌ Thiếu biến môi trường VITE_API_BASE_URL');
-  }
+  const apiBase = ''; // với Webpack dùng local luôn
 
   useEffect(() => {
-    fetch(`${apiBase}/api/seller-token?room=${room}`)
+    fetch(`${apiBase}/api/seller-token?room=${room}&identity=seller-a`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📦 Seller Token:', data.token);
@@ -22,7 +19,7 @@ function App() {
       })
       .catch((err) => console.error('❌ Lỗi seller-token:', err));
 
-    fetch(`${apiBase}/api/viewer-token?room=${room}`)
+    fetch(`${apiBase}/api/viewer-token?room=${room}&identity=viewer-a`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📦 Viewer Token:', data.token);
