@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { LiveKitRoom, useLocalParticipant } from '@livekit/components-react';
+import React, { useState } from 'react';
 import { Room } from 'livekit-client';
 
 interface Props {
@@ -12,24 +11,27 @@ export default function SellerPage({ token, room }: Props) {
   const [livekitRoom, setLivekitRoom] = useState<Room | null>(null);
 
   const startLivestream = async () => {
-    const { Room } = await import('livekit-client');
-    const newRoom = new Room();
+    try {
+      const roomInstance = new Room();
 
-    await newRoom.connect(process.env.LIVEKIT_URL!, token);
+      await roomInstance.connect(process.env.LIVEKIT_URL!, token);
 
-    const tracks = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
 
-    for (const track of tracks.getTracks()) {
-      await newRoom.localParticipant.publishTrack(track);
+      for (const track of stream.getTracks()) {
+        await roomInstance.localParticipant.publishTrack(track);
+      }
+
+      setLivekitRoom(roomInstance);
+      setStarted(true);
+
+      console.log('📡 Người bán đã bắt đầu phát phòng:', room);
+    } catch (err) {
+      console.error('❌ Lỗi kết nối hoặc phát:', err);
     }
-
-    setLivekitRoom(newRoom);
-    setStarted(true);
-
-    console.log('📡 Người bán đã bắt đầu phát phòng:', room);
   };
 
   return (
@@ -37,12 +39,14 @@ export default function SellerPage({ token, room }: Props) {
       {!started ? (
         <button
           onClick={startLivestream}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-6 py-3 rounded text-lg"
         >
           🎥 Bắt đầu phát livestream
         </button>
       ) : (
-        <p className="text-green-600">🔴 Đang livestream phòng: {room}</p>
+        <p className="text-green-600 text-xl font-bold">
+          🔴 Đang phát livestream tại phòng: {room}
+        </p>
       )}
     </div>
   );
