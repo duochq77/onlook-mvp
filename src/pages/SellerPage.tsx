@@ -8,28 +8,23 @@ interface Props {
 
 export default function SellerPage({ token, room }: Props) {
   const [started, setStarted] = useState(false);
-  const [livekitRoom, setLivekitRoom] = useState<Room | null>(null);
 
   const startLivestream = async () => {
     try {
       const roomInstance = new Room();
-
       await roomInstance.connect(process.env.LIVEKIT_URL!, token);
 
-      // ✅ Dòng này yêu cầu tương tác người dùng → sẽ không bị lỗi AudioContext
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
         video: true,
+        audio: true,
       });
 
-      // ✅ Publish tất cả track (video + audio) từ thiết bị
       for (const track of stream.getTracks()) {
         await roomInstance.localParticipant.publishTrack(track);
       }
 
-      setLivekitRoom(roomInstance);
       setStarted(true);
-      console.log('📡 Người bán đã bắt đầu phát phòng:', room);
+      console.log('📡 Người bán đã vào phòng:', room);
     } catch (error) {
       console.error('❌ Lỗi livestream:', error);
     }
