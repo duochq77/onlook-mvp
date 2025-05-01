@@ -16,26 +16,27 @@ export default function SellerPage({ token, room }: Props) {
 
       await roomInstance.connect(process.env.LIVEKIT_URL!, token);
 
+      // ✅ Dòng này yêu cầu tương tác người dùng → sẽ không bị lỗi AudioContext
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: true,
       });
 
+      // ✅ Publish tất cả track (video + audio) từ thiết bị
       for (const track of stream.getTracks()) {
         await roomInstance.localParticipant.publishTrack(track);
       }
 
       setLivekitRoom(roomInstance);
       setStarted(true);
-
       console.log('📡 Người bán đã bắt đầu phát phòng:', room);
-    } catch (err) {
-      console.error('❌ Lỗi kết nối hoặc phát:', err);
+    } catch (error) {
+      console.error('❌ Lỗi livestream:', error);
     }
   };
 
   return (
-    <div className="p-4">
+    <div className="p-6 text-center">
       {!started ? (
         <button
           onClick={startLivestream}

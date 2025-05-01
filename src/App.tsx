@@ -8,24 +8,26 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a'; // bạn có thể thay thành seller_{userId} sau này
 
-  const apiBase = ''; // với Webpack dùng local luôn
+  const apiBase = ''; // để trống nếu gọi API nội bộ từ Vercel
 
   useEffect(() => {
-    fetch(`${apiBase}/api/seller-token?room=${room}&identity=seller-a`)
+    // ✅ Gọi token cho người bán
+    fetch(`${apiBase}/api/token?room=${room}&identity=seller-a`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('📦 Seller Token:', data.token);
+        console.log('📦 Token seller:', data.token);
         setSellerToken(data.token);
       })
-      .catch((err) => console.error('❌ Lỗi seller-token:', err));
+      .catch((err) => console.error('❌ Lỗi lấy token seller:', err));
 
-    fetch(`${apiBase}/api/viewer-token?room=${room}&identity=viewer-a`)
+    // ✅ Gọi token cho người xem
+    fetch(`${apiBase}/api/token?room=${room}&identity=viewer-a`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('📦 Viewer Token:', data.token);
+        console.log('📦 Token viewer:', data.token);
         setViewerToken(data.token);
       })
-      .catch((err) => console.error('❌ Lỗi viewer-token:', err));
+      .catch((err) => console.error('❌ Lỗi lấy token viewer:', err));
   }, []);
 
   return (
