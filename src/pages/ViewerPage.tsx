@@ -11,15 +11,15 @@ export default function ViewerPage({ token, room }: Props) {
 
   const handleJoin = () => {
     setJoined(true);
-    console.log('👀 Người xem đã tham gia phòng:', room);
+    console.log('👀 Người xem đã vào phòng:', room);
   };
 
   return (
-    <div className="p-4">
+    <div className="p-6 text-center">
       {!joined ? (
         <button
           onClick={handleJoin}
-          className="bg-green-600 text-white px-4 py-2 rounded"
+          className="bg-green-600 text-white px-6 py-3 rounded text-lg"
         >
           ▶️ Xem livestream phòng: {room}
         </button>
@@ -27,13 +27,15 @@ export default function ViewerPage({ token, room }: Props) {
         <LiveKitRoom
           token={token}
           serverUrl={process.env.LIVEKIT_URL}
+          connect
           roomOptions={{
             videoCaptureDefaults: { resolution: { width: 640, height: 360 } },
             audioCaptureDefaults: { autoGainControl: true },
           }}
-          connect
         >
-          <p className="text-blue-600">🔵 Đang xem livestream...</p>
+          <p className="text-blue-600 text-xl font-bold">
+            🔵 Đang xem livestream...
+          </p>
         </LiveKitRoom>
       )}
     </div>
