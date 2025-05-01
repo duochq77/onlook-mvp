@@ -21,7 +21,7 @@ export default function ViewerPage({ token, room }: Props) {
           onClick={handleJoin}
           className="bg-green-600 text-white px-6 py-3 rounded text-lg"
         >
-          ▶️ Xem livestream phòng: {room}
+          ▶️ Bấm để xem livestream phòng: {room}
         </button>
       ) : (
         <LiveKitRoom
@@ -33,8 +33,8 @@ export default function ViewerPage({ token, room }: Props) {
             audioCaptureDefaults: { autoGainControl: true },
           }}
         >
-          <p className="text-blue-600 text-xl font-bold">
-            🔵 Đang xem livestream...
+          <p className="text-blue-700 text-xl font-bold">
+            🟢 Đang xem livestream...
           </p>
         </LiveKitRoom>
       )}
