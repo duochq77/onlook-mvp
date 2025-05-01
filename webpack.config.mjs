@@ -1,16 +1,14 @@
-// ✅ webpack.config.mjs
 import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import Dotenv from 'dotenv-webpack';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
-  entry: './src/index.tsx',
+  entry: './src/main.tsx',
+  mode: 'development',
   output: {
-    filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
     publicPath: '/',
   },
   resolve: {
@@ -18,22 +16,13 @@ export default {
   },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
-      },
+      { test: /\.tsx?$/, loader: 'ts-loader' },
+      { test: /\.css$/, use: ['style-loader', 'css-loader'] },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-    }),
-    new Dotenv({ systemvars: true }), // ✅ Đảm bảo process.env hoạt động
-  ],
   devServer: {
+    static: './public',
     historyApiFallback: true,
     port: 8080,
   },
-  mode: 'development',
 };

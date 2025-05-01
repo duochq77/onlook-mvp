@@ -1,14 +1,10 @@
-// src/services/LiveKitService.ts
-import { Room, createLocalVideoTrack } from 'livekit-client';
+import { connect } from 'livekit-client';
 
-const livekitUrl = process.env.VITE_LIVEKIT_URL; // ✅ Dùng process.env thay vì import.meta.env
+export async function connectToLiveKit(token: string, roomName: string) {
+  const room = await connect(process.env.VITE_LIVEKIT_URL!, token, {
+    autoSubscribe: true,
+  });
 
-export async function connectToSellerRoom(token: string): Promise<Room> {
-  const room = new Room();
-  await room.connect(livekitUrl!, token);
-
-  const localTrack = await createLocalVideoTrack();
-  await room.localParticipant.publishTrack(localTrack);
-
+  console.log(`🔗 Đã kết nối tới phòng: ${roomName}`);
   return room;
 }

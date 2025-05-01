@@ -1,32 +1,18 @@
-const { AccessToken } = require('livekit-server-sdk');
+import { NextApiRequest, NextApiResponse } from 'next';
+import { AccessToken } from 'livekit-server-sdk';
 
-module.exports = async function handler(req, res) {
-  const apiKey = process.env.VITE_LIVEKIT_API_KEY;
-  const apiSecret = process.env.VITE_LIVEKIT_API_SECRET;
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { room, identity } = req.query;
 
-  if (!apiKey || !apiSecret) {
-    return res.status(500).json({ error: 'Thiếu API Key hoặc Secret' });
+  if (!room || !identity) {
+    return res.status(400).json({ error: 'Missing room or identity' });
   }
 
-  try {
-    const room = req.query.room || 'default';
-    const identity = 'viewer-' + Math.random().toString(36).substring(2, 10);
+  const at = new AccessToken(process.env.LIVEKIT_API_KEY!, process.env.LIVEKIT_API_SECRET!, {
+    identity: identity as string,
+  });
+  at.addGrant({ room: room as string, roomJoin: true });
 
-    const at = new AccessToken(apiKey, apiSecret, {
-      identity,
-      name: identity,
-    });
-
-    at.addGrant({
-      roomJoin: true,
-      canSubscribe: true,
-      room: room,
-    });
-
-    const token = at.toJwt();
-    return res.status(200).json({ token });
-  } catch (err) {
-    console.error('Lỗi khi tạo token:', err);
-    return res.status(500).json({ error: 'Không thể tạo token' });
-  }
-};
+  const token = at.toJwt();
+  res.json({ token });
+}
