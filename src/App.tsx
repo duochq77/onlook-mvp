@@ -6,12 +6,10 @@ import ViewerPage from './pages/ViewerPage';
 function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null);
   const [viewerToken, setViewerToken] = useState<string | null>(null);
-  const room = 'a'; // phòng cố định
-
-  const apiBase = ''; // do đang chạy web thật
+  const room = 'a';
+  const apiBase = '';
 
   useEffect(() => {
-    // Gọi token cho seller
     fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}`)
       .then((res) => res.json())
       .then((data) => {
@@ -20,7 +18,6 @@ function App() {
       })
       .catch((err) => console.error('❌ Lỗi lấy token seller:', err));
 
-    // Gọi token cho viewer
     fetch(`${apiBase}/api/token?room=${room}&identity=viewer-${room}`)
       .then((res) => res.json())
       .then((data) => {
