@@ -1,8 +1,3 @@
-// 👇 PHẢI để dòng này lên trên cùng
-export const config = {
-  runtime: 'nodejs',
-};
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AccessToken } from 'livekit-server-sdk';
 
@@ -39,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       canSubscribe: true,
     });
 
-    const jwt = await token.toJwtAsync(); // ✅ phải dùng await
+    const jwt = await token.toJwtAsync();
 
     return res.status(200).json({ token: jwt });
   } catch (error: any) {
