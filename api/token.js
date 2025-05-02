@@ -28,9 +28,11 @@ module.exports = (req, res) => {
       canSubscribe: true
     });
 
-    const jwt = token.toJwt(); // 🔒 dùng sync vì version 2.12.0 không có toJwtAsync
+    const jwt = token.toJwt(); // 🔐 Đúng: đây là chuỗi token thực
 
-    return res.status(200).json({ token: jwt });
+    console.log('🔐 JWT created:', jwt); // ✅ in ra log nếu cần
+
+    return res.status(200).json({ token: jwt }); // ✅ return đúng
   } catch (error) {
     console.error('❌ Token creation failed:', error);
     return res.status(500).json({
