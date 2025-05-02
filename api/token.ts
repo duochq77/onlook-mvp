@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // ✅ Debug log
     console.log('🔐 API KEY:', apiKey);
-    console.log('🔐 API SECRET:', apiSecret ? '✔️ Loaded' : '❌ Missing');
+    console.log('🔐 API SECRET exists:', !!apiSecret);
     console.log('🏠 Room:', room);
     console.log('🙋 Identity:', identity);
 
@@ -31,8 +31,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const jwt = await token.toJwtAsync();
 
     return res.status(200).json({ token: jwt });
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Token creation failed:', error);
-    return res.status(500).json({ error: 'Token creation failed' });
+    return res.status(500).json({
+      error: 'Token creation failed',
+      name: error?.name || 'UnknownError',
+      message: error?.message || 'No message provided',
+      stack: error?.stack || 'No stack trace',
+    });
   }
 }
