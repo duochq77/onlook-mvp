@@ -10,3 +10,13 @@ export async function getUserProfile() {
   if (error) throw error
   return data
 }
+
+// ✅ Bổ sung signIn để tránh lỗi build ở LoginPage.tsx
+export async function signIn(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+  if (error) throw error
+  return data
+}

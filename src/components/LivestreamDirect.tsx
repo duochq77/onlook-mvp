@@ -2,11 +2,16 @@ import { useMediaDevices } from '@livekit/components-react'
 import { useEffect } from 'react'
 
 export default function LivestreamDirect() {
-  const { devices } = useMediaDevices()
+  const mediaDevices = useMediaDevices()
 
   useEffect(() => {
-    console.log('Available media devices:', devices)
-  }, [devices])
+    console.log('Media devices:', mediaDevices)
+  }, [mediaDevices])
 
-  return <div>Livestream trực tiếp</div>
+  return (
+    <div>
+      <h2>Livestream trực tiếp</h2>
+      <pre>{JSON.stringify(mediaDevices, null, 2)}</pre>
+    </div>
+  )
 }
