@@ -1,16 +1,15 @@
+// token-server/server.js
+
 const express = require('express');
 const cors = require('cors');
 const { AccessToken } = require('livekit-server-sdk');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 10000;
+const PORT = process.env.PORT || 10000;
 
-// ✅ Cấu hình đúng CORS cho domain production
-app.use(cors({
-  origin: ['https://onlookmarket.live', 'https://www.onlookmarket.live'],
-  credentials: true,
-}));
+// ✅ Cho phép mọi domain truy cập
+app.use(cors());
 
 app.get('/api/token', async (req, res) => {
   const { room, identity, role } = req.query;
@@ -27,6 +26,7 @@ app.get('/api/token', async (req, res) => {
   }
 
   const token = new AccessToken(apiKey, apiSecret, { identity });
+
   token.addGrant({
     room,
     roomJoin: true,
@@ -35,15 +35,3 @@ app.get('/api/token', async (req, res) => {
   });
 
   try {
-    const jwt = await token.toJwt();
-    res.setHeader('Access-Control-Allow-Origin', '*'); // ✅ fallback nếu CORS strict
-    res.json({ token: jwt });
-  } catch (err) {
-    console.error('❌ Token creation error:', err);
-    res.status(500).json({ error: 'JWT creation failed' });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`✅ Token server running on port ${port}`);
-});
