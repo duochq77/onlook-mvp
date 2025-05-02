@@ -1,3 +1,8 @@
+// 👇 PHẢI để dòng này lên trên cùng
+export const config = {
+  runtime: 'nodejs',
+};
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AccessToken } from 'livekit-server-sdk';
 
@@ -12,12 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
-    // ✅ Debug log
-    console.log('🔐 API KEY:', apiKey);
-    console.log('🔐 API SECRET exists:', !!apiSecret);
-    console.log('🏠 Room:', room);
-    console.log('🙋 Identity:', identity);
-
     if (!apiKey || !apiSecret) {
       return res.status(500).json({ error: 'Missing LiveKit API credentials' });
     }
@@ -28,16 +27,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     token.addGrant({ roomJoin: true, room });
 
-    const jwt = await token.toJwtAsync();
+    const jwt = await token.toJwtAsync(); // ✅ phải dùng await
 
     return res.status(200).json({ token: jwt });
   } catch (error: any) {
     console.error('❌ Token creation failed:', error);
     return res.status(500).json({
       error: 'Token creation failed',
-      name: error?.name || 'UnknownError',
-      message: error?.message || 'No message provided',
-      stack: error?.stack || 'No stack trace',
+      message: error?.message || 'Unknown error',
     });
   }
 }
