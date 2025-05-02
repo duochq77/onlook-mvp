@@ -8,8 +8,8 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a';
 
-  // ✅ Dùng API thật từ server token
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://your-token-server.onrender.com';
+  // ✅ Gọi đúng token server đang chạy trên Render
+  const apiBase = 'https://onlook-token-server.onrender.com';
 
   useEffect(() => {
     fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}&role=publisher`)
