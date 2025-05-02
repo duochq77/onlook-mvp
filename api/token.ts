@@ -8,27 +8,28 @@ module.exports = async (req, res) => {
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
     if (!room || !identity || !apiKey || !apiSecret) {
-      console.error('❌ Thiếu room, identity, apiKey hoặc apiSecret');
-      return res.status(500).json({ error: 'Missing required parameters or configuration' });
+      console.error('❌ Missing parameters or env vars');
+      return res.status(400).json({ error: 'Missing parameters or configuration' });
     }
 
     const token = new AccessToken(apiKey, apiSecret, {
-      identity,
+      identity: String(identity),
       ttl: 3600,
     });
 
     token.addGrant({
       roomJoin: true,
-      room,
-      canPublish: identity.startsWith('seller'),
+      room: String(room),
+      canPublish: String(identity).startsWith('seller'),
       canSubscribe: true,
     });
 
-    const jwt = token.toJwt();
-    console.log(`✅ Token created for ${identity}`);
+    const jwt = token.toJwt(); // 👈 Đảm bảo đây là chuỗi, không phải object
+
+    console.log('✅ Token generated for:', identity);
     res.status(200).json({ token: jwt });
   } catch (err) {
-    console.error('❌ Lỗi tạo token:', err);
+    console.error('❌ Token generation error:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
