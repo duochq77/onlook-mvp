@@ -11,10 +11,10 @@ function SellerPage({ token, room }: SellerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video={true}
-      audio={true}
+      video
+      audio
     >
       <h2>📡 Livestream đang phát từ người bán...</h2>
     </LiveKitRoom>

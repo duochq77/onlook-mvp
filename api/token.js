@@ -15,6 +15,7 @@ module.exports = (req, res) => {
     }
 
     const token = new AccessToken(apiKey, apiSecret, { identity });
+
     token.addGrant({
       room,
       roomJoin: true,
@@ -22,10 +23,9 @@ module.exports = (req, res) => {
       canSubscribe: true
     });
 
-    const jwt = token.toJwt(); // DÙNG BẢN SYNC
+    const jwt = token.toJwt(); // ✅ dùng bản sync
 
     console.log('✅ JWT:', jwt);
-    console.log('🔍 typeof jwt:', typeof jwt);
 
     return res.status(200).json({ token: jwt });
   } catch (error) {

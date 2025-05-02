@@ -11,10 +11,10 @@ function ViewerPage({ token, room }: ViewerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
       connect
-      video={true}
-      audio={true}
+      video
+      audio
     >
       <h2>👀 Người xem đang theo dõi phòng: {room}</h2>
       <GridLayout tracks={[{ source: 'camera', withPlaceholder: true }]}>
