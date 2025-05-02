@@ -6,50 +6,19 @@ import ViewerPage from './pages/ViewerPage';
 function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null);
   const [viewerToken, setViewerToken] = useState<string | null>(null);
-
   const room = 'a';
   const apiBase = 'https://onlook-token-server.onrender.com';
 
   useEffect(() => {
-    const sellerParams = new URLSearchParams({
-      room,
-      identity: `seller-${room}`,
-      role: 'publisher',
-    });
+    fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}&role=publisher`)
+      .then(res => res.json())
+      .then(data => setSellerToken(data.token))
+      .catch(err => console.error('❌ Lỗi lấy token seller:', err));
 
-    const viewerParams = new URLSearchParams({
-      room,
-      identity: `viewer-${room}`,
-      role: 'viewer',
-    });
-
-    // Gọi token seller
-    fetch(`${apiBase}/api/token?${sellerParams.toString()}`)
-      .then(async (res) => {
-        const text = await res.text();
-        console.log('📦 Seller raw response:', text);
-        try {
-          const json = JSON.parse(text);
-          setSellerToken(json.token);
-        } catch (e) {
-          console.error('❌ Lỗi parse token seller:', e);
-        }
-      })
-      .catch((err) => console.error('❌ Lỗi gọi API seller:', err));
-
-    // Gọi token viewer
-    fetch(`${apiBase}/api/token?${viewerParams.toString()}`)
-      .then(async (res) => {
-        const text = await res.text();
-        console.log('📦 Viewer raw response:', text);
-        try {
-          const json = JSON.parse(text);
-          setViewerToken(json.token);
-        } catch (e) {
-          console.error('❌ Lỗi parse token viewer:', e);
-        }
-      })
-      .catch((err) => console.error('❌ Lỗi gọi API viewer:', err));
+    fetch(`${apiBase}/api/token?room=${room}&identity=viewer-${room}&role=viewer`)
+      .then(res => res.json())
+      .then(data => setViewerToken(data.token))
+      .catch(err => console.error('❌ Lỗi lấy token viewer:', err));
   }, []);
 
   return (
@@ -58,3 +27,19 @@ function App() {
         <Route path="/" element={<Navigate to="/viewer" />} />
         <Route
           path="/seller"
+          element={
+            sellerToken ? <SellerPage token={sellerToken} room={room} /> : <p>🔄 Đang lấy token người bán...</p>
+          }
+        />
+        <Route
+          path="/viewer"
+          element={
+            viewerToken ? <ViewerPage token={viewerToken} room={room} /> : <p>🔄 Đang lấy token người xem...</p>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
