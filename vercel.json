@@ -3,6 +3,6 @@
   "outputDirectory": "dist",
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1.ts" },
-    { "src": "/[^.]+", "dest": "/index.html", "status": 200 }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
