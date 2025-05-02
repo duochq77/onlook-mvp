@@ -20,29 +20,23 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: 'Missing LiveKit API credentials' });
     }
 
-    const grant = {
+    const token = new AccessToken(apiKey, apiSecret, { identity });
+    token.addGrant({
       room,
       roomJoin: true,
       canPublish: role === 'publisher',
-      canSubscribe: true,
-    };
+      canSubscribe: true
+    });
 
-    const token = new AccessToken(apiKey, apiSecret, { identity });
-    token.addGrant(grant);
-
-    // ✅ Bắt buộc dùng async nếu dùng SDK mới
+    // ✅ RẤT QUAN TRỌNG: dùng await và async
     const jwt = await token.toJwtAsync();
 
     return res.status(200).json({ token: jwt });
   } catch (error) {
     console.error('❌ Token creation failed:', error);
-
     return res.status(500).json({
       error: 'Token creation failed',
-      message:
-        error && typeof error === 'object' && 'message' in error
-          ? error.message
-          : 'Unknown error',
+      message: error?.message || 'Unknown error',
     });
   }
 };
