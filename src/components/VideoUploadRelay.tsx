@@ -1,45 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-import { useLocalParticipant } from '@livekit/components-react';
+import { useEffect } from 'react'
 
 export default function VideoUploadRelay() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const { localParticipant } = useLocalParticipant();
-
   useEffect(() => {
-    if (file && videoRef.current) {
-      const videoElement = videoRef.current;
-      const stream = videoElement.captureStream();
-
-      const videoTrack = stream.getVideoTracks()[0];
-      const audioTrack = stream.getAudioTracks()[0];
-
-      if (videoTrack) localParticipant.publishTrack(videoTrack);
-      if (audioTrack) localParticipant.publishTrack(audioTrack);
+    const video = document.querySelector('video') as HTMLVideoElement & {
+      captureStream?: () => MediaStream
     }
-  }, [file, localParticipant]);
+
+    if (video && typeof video.captureStream === 'function') {
+      const stream = video.captureStream()
+      console.log('Captured stream:', stream)
+    } else {
+      console.warn('captureStream is not supported in this browser.')
+    }
+  }, [])
 
   return (
-    <div className="text-white p-4">
-      <input
-        type="file"
-        accept="video/*"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) setFile(f);
-        }}
-      />
-      {file && (
-        <video
-          ref={videoRef}
-          src={URL.createObjectURL(file)}
-          autoPlay
-          loop
-          muted
-          controls
-          className="w-full mt-3"
-        />
-      )}
+    <div>
+      <video src="/sample.mp4" controls></video>
     </div>
-  );
+  )
 }

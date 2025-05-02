@@ -1,20 +1,12 @@
-import { useEffect } from 'react';
-import { useLocalParticipant, useMediaDevice } from '@livekit/components-react';
+import { useMediaDevices } from '@livekit/components-react'
+import { useEffect } from 'react'
 
 export default function LivestreamDirect() {
-  const { localParticipant } = useLocalParticipant();
-  const { getDefaultDevice } = useMediaDevice();
+  const { devices } = useMediaDevices()
 
   useEffect(() => {
-    async function startPublishing() {
-      const cam = await getDefaultDevice('videoinput');
-      const mic = await getDefaultDevice('audioinput');
-      if (cam) await localParticipant.setCameraEnabled(true);
-      if (mic) await localParticipant.setMicrophoneEnabled(true);
-    }
+    console.log('Available media devices:', devices)
+  }, [devices])
 
-    startPublishing();
-  }, [localParticipant, getDefaultDevice]);
-
-  return <div className="text-white p-2">Đang phát trực tiếp bằng webcam...</div>;
+  return <div>Livestream trực tiếp</div>
 }

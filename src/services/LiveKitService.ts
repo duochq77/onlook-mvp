@@ -1,10 +1,8 @@
-import { connect } from 'livekit-client';
+import { Room } from 'livekit-client'
 
-export async function connectToLiveKit(token: string, roomName: string) {
-  const room = await connect(process.env.VITE_LIVEKIT_URL!, token, {
-    autoSubscribe: true,
-  });
-
-  console.log(`🔗 Đã kết nối tới phòng: ${roomName}`);
-  return room;
+export async function connectToRoom(url: string, token: string) {
+  const room = new Room()
+  await room.connect(url, token)
+  console.log('Connected to LiveKit room', room.name)
+  return room
 }
