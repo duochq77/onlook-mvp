@@ -6,8 +6,10 @@ require('dotenv').config();
 const app = express();
 const port = 10000;
 
-// ✅ Mở quyền truy cập từ domain khác
-app.use(cors());
+// ✅ Cho phép CORS từ đúng domain thật:
+app.use(cors({
+  origin: ['https://www.onlookmarket.live', 'https://onlookmarket.live']
+}));
 
 app.get('/api/token', async (req, res) => {
   const { room, identity, role } = req.query;
@@ -24,6 +26,7 @@ app.get('/api/token', async (req, res) => {
   }
 
   const token = new AccessToken(apiKey, apiSecret, { identity });
+
   token.addGrant({
     room,
     roomJoin: true,
@@ -33,11 +36,11 @@ app.get('/api/token', async (req, res) => {
 
   try {
     const jwt = await token.toJwt();
-    console.log('🎫 Token created for:', identity);
-    return res.status(200).json({ token: jwt });
+    console.log('✅ JWT issued for', identity);
+    res.json({ token: jwt });
   } catch (err) {
     console.error('❌ Token creation error:', err);
-    return res.status(500).json({ error: 'Token creation failed' });
+    res.status(500).json({ error: 'JWT creation failed' });
   }
 });
 
