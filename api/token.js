@@ -4,21 +4,13 @@ module.exports = (req, res) => {
   try {
     const { room, identity, role } = req.query;
 
-    console.log('🚀 Nhận yêu cầu tạo token cho:', { room, identity, role });
-
-    if (
-      !room || !identity || !role ||
-      typeof room !== 'string' ||
-      typeof identity !== 'string' ||
-      typeof role !== 'string'
-    ) {
-      return res.status(400).json({ error: 'Missing or invalid room, identity, or role' });
-    }
+    console.log('📥 Input:', { room, identity, role });
 
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
     if (!apiKey || !apiSecret) {
+      console.log('🔐 Thiếu API key hoặc secret');
       return res.status(500).json({ error: 'Missing LiveKit API credentials' });
     }
 
@@ -30,9 +22,11 @@ module.exports = (req, res) => {
       canSubscribe: true
     });
 
-    const jwt = token.toJwt(); // ✅ Dùng hàm sync
+    const jwt = token.toJwt(); // DÙNG BẢN SYNC
 
-    console.log('✅ Token created:', jwt);
+    console.log('✅ JWT:', jwt);
+    console.log('🔍 typeof jwt:', typeof jwt);
+
     return res.status(200).json({ token: jwt });
   } catch (error) {
     console.error('❌ Token creation failed:', error);
