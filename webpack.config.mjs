@@ -1,6 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Dotenv from 'dotenv-webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin'; // ✅ mới thêm
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,7 @@ export default {
     port: 8080,
   },
   plugins: [
-    new Dotenv()
+    new Dotenv(),
+    new HtmlWebpackPlugin({ template: './public/index.html' }) // ✅ mới thêm
   ],
 };
