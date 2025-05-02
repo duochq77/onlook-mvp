@@ -2,30 +2,37 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { AccessToken } from 'livekit-server-sdk';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { room, identity } = req.query;
-
-  if (!room || !identity || typeof room !== 'string' || typeof identity !== 'string') {
-    return res.status(400).json({ error: 'Missing or invalid room/identity' });
-  }
-
   try {
+    const { room, identity } = req.query;
+
+    if (!room || !identity || typeof room !== 'string' || typeof identity !== 'string') {
+      return res.status(400).json({ error: 'Missing or invalid room or identity' });
+    }
+
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
+    // ✅ Debug log
+    console.log('🔐 API KEY:', apiKey);
+    console.log('🔐 API SECRET:', apiSecret ? '✔️ Loaded' : '❌ Missing');
+    console.log('🏠 Room:', room);
+    console.log('🙋 Identity:', identity);
+
     if (!apiKey || !apiSecret) {
-      return res.status(500).json({ error: 'Missing LiveKit credentials' });
+      return res.status(500).json({ error: 'Missing LiveKit API credentials' });
     }
 
-    const at = new AccessToken(apiKey, apiSecret, {
+    const token = new AccessToken(apiKey, apiSecret, {
       identity,
     });
 
-    at.addGrant({ roomJoin: true, room });
+    token.addGrant({ roomJoin: true, room });
 
-    const jwt = await at.toJwtAsync();
+    const jwt = await token.toJwtAsync();
+
     return res.status(200).json({ token: jwt });
-  } catch (err) {
-    console.error('❌ Token creation error:', err);
+  } catch (error) {
+    console.error('❌ Token creation failed:', error);
     return res.status(500).json({ error: 'Token creation failed' });
   }
 }
