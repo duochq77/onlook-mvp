@@ -1,7 +1,7 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
 const { AccessToken, VideoGrant } = require('livekit-server-sdk');
 
-/** @type {import('next').NextApiHandler} */
-module.exports = function handler(req, res) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { room, identity, role } = req.query;
 
@@ -23,7 +23,7 @@ module.exports = function handler(req, res) {
       return res.status(500).json({ error: 'Missing LiveKit API credentials' });
     }
 
-    const grant = {
+    const grant: VideoGrant = {
       room,
       roomJoin: true,
       canPublish: role === 'publisher',
@@ -34,12 +34,14 @@ module.exports = function handler(req, res) {
     token.addGrant(grant);
 
     const jwt = token.toJwt();
+
     return res.status(200).json({ token: jwt });
-  } catch (error) {
-    console.error('❌ Token creation failed:', error);
+  } catch (error: unknown) {
+    const err = error as { message?: string };
+    console.error('❌ Token creation failed:', err);
     return res.status(500).json({
       error: 'Token creation failed',
-      message: error?.message || 'Unknown error',
+      message: err.message || 'Unknown error',
     });
   }
-};
+}
