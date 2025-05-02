@@ -1,6 +1,6 @@
 const { AccessToken } = require('livekit-server-sdk');
 
-module.exports = async (req, res) => {
+module.exports = (req, res) => {
   try {
     const { room, identity, role } = req.query;
 
@@ -28,8 +28,8 @@ module.exports = async (req, res) => {
       canSubscribe: true
     });
 
-    // ✅ RẤT QUAN TRỌNG: dùng await và async
-    const jwt = await token.toJwtAsync();
+    // ✅ Dùng hàm sync
+    const jwt = token.toJwt();
 
     return res.status(200).json({ token: jwt });
   } catch (error) {
