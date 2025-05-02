@@ -11,7 +11,7 @@ function ViewerPage({ token, room }: ViewerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl="wss://onlook-dev-zvm78p9y.livekit.cloud"
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       connect
       video
       audio
