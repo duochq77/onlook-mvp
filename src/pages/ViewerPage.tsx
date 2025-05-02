@@ -1,45 +1,32 @@
-import React, { useState } from 'react';
 import { LiveKitRoom } from '@livekit/components-react';
+import { useEffect } from 'react';
 
-interface Props {
+interface ViewerPageProps {
   token: string;
   room: string;
 }
 
-export default function ViewerPage({ token, room }: Props) {
-  const [joined, setJoined] = useState(false);
-
-  const handleJoin = () => {
-    setJoined(true);
+function ViewerPage({ token, room }: ViewerPageProps) {
+  useEffect(() => {
     console.log('👀 Người xem đã vào phòng:', room);
-  };
+  }, [room]);
 
   return (
-    <div className="p-6 text-center">
-      {!joined ? (
-        <button
-          onClick={handleJoin}
-          className="bg-green-600 text-white px-6 py-3 rounded text-lg"
-        >
-          ▶️ Bấm để xem livestream phòng: {room}
-        </button>
-      ) : (
-        <LiveKitRoom
-          token={token}
-          serverUrl={process.env.LIVEKIT_URL}
-          connect
-          roomOptions={{
-            // Viewer không có mic, chỉ xem
-            autoSubscribe: true,
-            videoCaptureDefaults: undefined,
-            audioCaptureDefaults: undefined,
-          }}
-        >
-          <p className="text-blue-700 text-xl font-bold">
-            🟢 Đang xem livestream...
-          </p>
-        </LiveKitRoom>
-      )}
-    </div>
+    <LiveKitRoom
+      token={token}
+      serverUrl={process.env.VITE_LIVEKIT_URL}
+      connect
+      video={true}
+      audio={true} // Viewer vẫn được nhận audio
+      onConnected={() => {
+        // Hệ thống sẽ tự ngắt mic của viewer
+        // Dù viewer không được cấp quyền publish từ token
+        console.log('🔇 Viewer không có mic');
+      }}
+    >
+      <h2>👁️ Viewer đang xem livestream...</h2>
+    </LiveKitRoom>
   );
 }
+
+export default ViewerPage;
