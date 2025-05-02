@@ -1,12 +1,12 @@
 const express = require('express');
-const cors = require('cors');
+const cors = require('cors'); // ✅ THÊM DÒNG NÀY
 const { AccessToken } = require('livekit-server-sdk');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-app.use(cors()); // ✅ Bắt buộc: bật CORS cho mọi origin
+app.use(cors()); // ✅ BẮT BUỘC: Cho phép truy cập từ domain khác (CORS)
 app.use(express.json());
 
 app.get('/api/token', async (req, res) => {
@@ -43,3 +43,4 @@ app.get('/api/token', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Token server running on port ${PORT}`);
 });
+
