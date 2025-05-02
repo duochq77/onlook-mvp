@@ -3,15 +3,7 @@ const { AccessToken } = require('livekit-server-sdk');
 module.exports = (req, res) => {
   try {
     const { room, identity, role } = req.query;
-
-    if (
-      !room || !identity || !role ||
-      typeof room !== 'string' ||
-      typeof identity !== 'string' ||
-      typeof role !== 'string'
-    ) {
-      return res.status(400).json({ error: 'Missing or invalid room, identity, or role' });
-    }
+    console.log('📥 Input:', { room, identity, role });
 
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
@@ -21,7 +13,6 @@ module.exports = (req, res) => {
     }
 
     const token = new AccessToken(apiKey, apiSecret, { identity });
-
     token.addGrant({
       room,
       roomJoin: true,
@@ -29,9 +20,14 @@ module.exports = (req, res) => {
       canSubscribe: true
     });
 
-    const jwt = token.toJwt(); // ✅ Đây là chuỗi token
+    token.toJwt().then((jwt) => {
+      console.log('✅ JWT:', jwt);
+      return res.status(200).json({ token: jwt });
+    }).catch((err) => {
+      console.error('❌ JWT error:', err);
+      return res.status(500).json({ error: 'JWT error', message: err?.message });
+    });
 
-    return res.status(200).json({ token: jwt }); // ✅ Phải gửi ra chuỗi, không phải object
   } catch (error) {
     console.error('❌ Token creation failed:', error);
     return res.status(500).json({
