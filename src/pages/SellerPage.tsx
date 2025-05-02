@@ -6,7 +6,7 @@ interface SellerPageProps {
 }
 
 function SellerPage({ token, room }: SellerPageProps) {
-  console.log('📡 Người bán đã vào phòng:', room);
+  if (!token) return <p>❌ Thiếu token</p>;
 
   return (
     <LiveKitRoom
@@ -16,7 +16,7 @@ function SellerPage({ token, room }: SellerPageProps) {
       video
       audio
     >
-      <h2>📡 Livestream đang phát từ người bán...</h2>
+      <h2>📡 Livestream đang phát từ người bán: {room}</h2>
     </LiveKitRoom>
   );
 }

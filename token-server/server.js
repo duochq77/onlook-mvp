@@ -5,7 +5,7 @@ const { AccessToken } = require('livekit-server-sdk');
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.get('/api/token', async (req, res) => {
   const { room, identity, role } = req.query;
@@ -22,6 +22,7 @@ app.get('/api/token', async (req, res) => {
   }
 
   const token = new AccessToken(apiKey, apiSecret, { identity });
+
   token.addGrant({
     room,
     roomJoin: true,
@@ -30,15 +31,13 @@ app.get('/api/token', async (req, res) => {
   });
 
   try {
-    const jwt = await token.toJwt(); // ✅ FINAL FIXED LINE
-    console.log('✅ JWT:', jwt);
+    const jwt = await token.toJwt();
     return res.status(200).json({ token: jwt });
   } catch (err) {
-    console.error('❌ JWT creation error:', err);
     return res.status(500).json({ error: 'JWT creation failed' });
   }
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Token server running at http://localhost:${port}`);
+  console.log(`✅ Token server running on port ${port}`);
 });

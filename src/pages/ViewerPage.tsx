@@ -6,7 +6,7 @@ interface ViewerPageProps {
 }
 
 function ViewerPage({ token, room }: ViewerPageProps) {
-  console.log('👀 Người xem đã vào phòng:', room);
+  if (!token) return <p>❌ Thiếu token</p>;
 
   return (
     <LiveKitRoom

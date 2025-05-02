@@ -7,25 +7,17 @@ function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null);
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a';
-
-  // ✅ Gọi đúng token server đang chạy trên Render
   const apiBase = 'https://onlook-token-server.onrender.com';
 
   useEffect(() => {
     fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}&role=publisher`)
       .then((res) => res.json())
-      .then((data) => {
-        console.log('📦 Seller Token:', data.token);
-        setSellerToken(data.token);
-      })
+      .then((data) => setSellerToken(data.token))
       .catch((err) => console.error('❌ Lỗi lấy token seller:', err));
 
     fetch(`${apiBase}/api/token?room=${room}&identity=viewer-${room}&role=viewer`)
       .then((res) => res.json())
-      .then((data) => {
-        console.log('📦 Viewer Token:', data.token);
-        setViewerToken(data.token);
-      })
+      .then((data) => setViewerToken(data.token))
       .catch((err) => console.error('❌ Lỗi lấy token viewer:', err));
   }, []);
 
