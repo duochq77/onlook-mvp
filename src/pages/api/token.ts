@@ -4,7 +4,7 @@ const { AccessToken, VideoGrant } = require('livekit-server-sdk');
  * @param {import('next').NextApiRequest} req
  * @param {import('next').NextApiResponse} res
  */
-module.exports = function handler(req, res) {
+module.exports = /** @type {import('next').NextApiHandler} */ ((req, res) => {
   try {
     const { room, identity, role } = req.query;
 
@@ -39,9 +39,12 @@ module.exports = function handler(req, res) {
     return res.status(200).json({ token: jwt });
   } catch (error) {
     console.error('❌ Token creation failed:', error);
+
     return res.status(500).json({
       error: 'Token creation failed',
-      message: error?.message || 'Unknown error',
+      message: typeof error === 'object' && error?.message
+        ? error.message
+        : 'Unknown error',
     });
   }
-};
+});
