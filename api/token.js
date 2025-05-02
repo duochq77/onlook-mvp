@@ -1,6 +1,6 @@
 const { AccessToken } = require('livekit-server-sdk');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   try {
     const { room, identity, role } = req.query;
 
@@ -30,7 +30,8 @@ module.exports = (req, res) => {
     const token = new AccessToken(apiKey, apiSecret, { identity });
     token.addGrant(grant);
 
-    const jwt = token.toJwt();
+    // ✅ Bắt buộc dùng async nếu dùng SDK mới
+    const jwt = await token.toJwtAsync();
 
     return res.status(200).json({ token: jwt });
   } catch (error) {
