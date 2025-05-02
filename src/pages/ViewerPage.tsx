@@ -29,8 +29,10 @@ export default function ViewerPage({ token, room }: Props) {
           serverUrl={process.env.LIVEKIT_URL}
           connect
           roomOptions={{
-            videoCaptureDefaults: { resolution: { width: 640, height: 360 } },
-            audioCaptureDefaults: { autoGainControl: true },
+            // Viewer không có mic, chỉ xem
+            autoSubscribe: true,
+            videoCaptureDefaults: undefined,
+            audioCaptureDefaults: undefined,
           }}
         >
           <p className="text-blue-700 text-xl font-bold">

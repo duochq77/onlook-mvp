@@ -4,27 +4,36 @@ import { AccessToken } from 'livekit-server-sdk';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { room, identity } = req.query;
 
-  if (!room || !identity) {
-    return res.status(400).json({ error: '❌ Thiếu room hoặc identity' });
+  if (!room || !identity || typeof room !== 'string' || typeof identity !== 'string') {
+    return res.status(400).json({ error: 'Missing or invalid room or identity' });
   }
 
-  const identityStr = identity as string;
-  const isSeller = identityStr.startsWith('seller-');
+  const token = new AccessToken(
+    process.env.LIVEKIT_API_KEY!,
+    process.env.LIVEKIT_API_SECRET!,
+    {
+      identity,
+    }
+  );
 
-  const apiKey = process.env.LIVEKIT_API_KEY!;
-  const apiSecret = process.env.LIVEKIT_API_SECRET!;
+  // Phân quyền theo loại người dùng
+  if (identity.startsWith('seller-')) {
+    token.addGrant({
+      room,
+      roomJoin: true,
+      canPublish: true,
+      canSubscribe: true,
+    });
+  } else if (identity.startsWith('viewer-')) {
+    token.addGrant({
+      room,
+      roomJoin: true,
+      canPublish: false, // viewer không được phép phát audio/mic
+      canSubscribe: true,
+    });
+  } else {
+    return res.status(403).json({ error: 'Invalid identity prefix' });
+  }
 
-  const token = new AccessToken(apiKey, apiSecret, {
-    identity: identityStr,
-    ttl: 60 * 60, // 1 giờ
-  });
-
-  token.addGrant({
-    room: room as string,
-    roomJoin: true,
-    canPublish: isSeller,   // ✅ chỉ seller được phát
-    canSubscribe: true,     // ✅ cả 2 đều xem/nghe được
-  });
-
-  res.status(200).json({ token: token.toJwt() });
+  res.json({ token: token.toJwt() });
 }
