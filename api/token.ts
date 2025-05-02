@@ -8,33 +8,33 @@ module.exports = async (req, res) => {
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
     if (!room || !identity || !apiKey || !apiSecret) {
-      console.error('❌ Missing params or env');
-      return res.status(400).json({ error: 'Missing required parameters or config' });
+      console.error('❌ Thiếu room, identity hoặc cấu hình');
+      return res.status(400).json({ error: 'Missing parameters or config' });
     }
 
     const token = new AccessToken(apiKey, apiSecret, {
-      identity: identity.toString(),
+      identity: String(identity),
       ttl: 3600,
     });
 
     token.addGrant({
       roomJoin: true,
-      room: room.toString(),
-      canPublish: identity.toString().startsWith('seller'),
+      room: String(room),
+      canPublish: String(identity).startsWith('seller'),
       canSubscribe: true,
     });
 
-    const jwt = token.toJwt(); // ✅ Đây phải là string JWT
+    const jwt = await token.toJwtAsync(); // ✅ bản 2.x dùng hàm async
 
     if (!jwt || typeof jwt !== 'string') {
-      console.error('❌ Token is empty or not string');
+      console.error('❌ Token tạo ra không hợp lệ');
       return res.status(500).json({ error: 'Token creation failed' });
     }
 
-    console.log('✅ Token generated for', identity);
-    res.status(200).json({ token: jwt });
+    console.log('✅ Token created for', identity);
+    return res.status(200).json({ token: jwt });
   } catch (err) {
-    console.error('❌ Token error:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('❌ Lỗi tạo token:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
