@@ -1,5 +1,4 @@
 import { LiveKitRoom } from '@livekit/components-react';
-import { useEffect } from 'react';
 
 interface SellerPageProps {
   token: string;
@@ -7,9 +6,7 @@ interface SellerPageProps {
 }
 
 function SellerPage({ token, room }: SellerPageProps) {
-  useEffect(() => {
-    console.log('📡 Người bán đã vào phòng:', room);
-  }, [room]);
+  console.log('📡 Người bán đã vào phòng:', room);
 
   return (
     <LiveKitRoom
@@ -19,7 +16,8 @@ function SellerPage({ token, room }: SellerPageProps) {
       video={true}
       audio={true}
     >
-      <h2>🎥 Seller đang livestream...</h2>
+      <h2>📡 Livestream đang phát từ người bán...</h2>
+      {/* Người bán không cần hiển thị video của chính mình */}
     </LiveKitRoom>
   );
 }
