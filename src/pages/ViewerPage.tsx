@@ -1,12 +1,14 @@
 import { LiveKitRoom } from '@livekit/components-react';
 import { useEffect } from 'react';
 
-interface ViewerPageProps {
+interface Props {
   token: string;
   room: string;
 }
 
-function ViewerPage({ token, room }: ViewerPageProps) {
+export default function ViewerPage({ token, room }: Props) {
+  const serverUrl = process.env.LIVEKIT_URL;
+
   useEffect(() => {
     console.log('👀 Người xem đã vào phòng:', room);
   }, [room]);
@@ -14,19 +16,12 @@ function ViewerPage({ token, room }: ViewerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.VITE_LIVEKIT_URL}
+      serverUrl={serverUrl}
       connect
       video={true}
-      audio={true} // Viewer vẫn được nhận audio
-      onConnected={() => {
-        // Hệ thống sẽ tự ngắt mic của viewer
-        // Dù viewer không được cấp quyền publish từ token
-        console.log('🔇 Viewer không có mic');
-      }}
+      audio={true}
     >
-      <h2>👁️ Viewer đang xem livestream...</h2>
+      <div className="text-white text-center mt-10">🔴 Đang xem livestream...</div>
     </LiveKitRoom>
   );
 }
-
-export default ViewerPage;
