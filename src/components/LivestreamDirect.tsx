@@ -1,20 +1,20 @@
 import { useMediaDevices } from '@livekit/components-react'
 import { useEffect } from 'react'
 
+// ✅ Chọn loại thiết bị cần lấy, ví dụ: 'videoinput' để lấy camera
 export default function LivestreamDirect() {
-  // ✅ Không truyền gì vào -> lấy toàn bộ thiết bị (âm thanh + hình ảnh)
-  const devices = useMediaDevices()
+  const videoDevices = useMediaDevices({ kind: 'videoinput' })
 
   useEffect(() => {
-    console.log('Thiết bị đang có:', devices)
-  }, [devices])
+    console.log('Camera devices:', videoDevices)
+  }, [videoDevices])
 
   return (
     <div>
-      <h2>Livestream trực tiếp</h2>
+      <h2>Camera hiện có:</h2>
       <ul>
-        {devices.map((d, idx) => (
-          <li key={idx}>{d.label || '(Không tên)'}</li>
+        {videoDevices.map((d, idx) => (
+          <li key={idx}>{d.label || 'Không tên'}</li>
         ))}
       </ul>
     </div>
