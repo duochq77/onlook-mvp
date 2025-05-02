@@ -1,11 +1,13 @@
 const express = require('express');
-const dotenv = require('dotenv');
+const cors = require('cors');
 const { AccessToken } = require('livekit-server-sdk');
-
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = 10000;
+
+// ✅ Mở quyền truy cập từ domain khác
+app.use(cors());
 
 app.get('/api/token', async (req, res) => {
   const { room, identity, role } = req.query;
@@ -22,7 +24,6 @@ app.get('/api/token', async (req, res) => {
   }
 
   const token = new AccessToken(apiKey, apiSecret, { identity });
-
   token.addGrant({
     room,
     roomJoin: true,
@@ -32,9 +33,11 @@ app.get('/api/token', async (req, res) => {
 
   try {
     const jwt = await token.toJwt();
+    console.log('🎫 Token created for:', identity);
     return res.status(200).json({ token: jwt });
   } catch (err) {
-    return res.status(500).json({ error: 'JWT creation failed' });
+    console.error('❌ Token creation error:', err);
+    return res.status(500).json({ error: 'Token creation failed' });
   }
 });
 
