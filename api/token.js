@@ -28,7 +28,7 @@ module.exports = (req, res) => {
       canSubscribe: true
     });
 
-    // ✅ Dùng hàm sync
+    // ✅ DÙNG HÀM SYNC
     const jwt = token.toJwt();
 
     return res.status(200).json({ token: jwt });
