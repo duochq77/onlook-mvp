@@ -1,4 +1,4 @@
-const { AccessToken, VideoGrant } = require('livekit-server-sdk');
+const { AccessToken } = require('livekit-server-sdk');
 
 module.exports = (req, res) => {
   try {
