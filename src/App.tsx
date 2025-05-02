@@ -6,8 +6,9 @@ import ViewerPage from './pages/ViewerPage';
 function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null);
   const [viewerToken, setViewerToken] = useState<string | null>(null);
-  const room = 'a';
-  const apiBase = '';
+  const room = 'a'; // phòng cố định
+
+  const apiBase = ''; // do đang chạy web thật
 
   useEffect(() => {
     // Gọi token cho seller
@@ -36,19 +37,21 @@ function App() {
         <Route
           path="/seller"
           element={
-            <>
-              <h1>🧪 Seller route đang hoạt động</h1>
-              <p>📦 Token: {sellerToken || 'Đang lấy...'}</p>
-            </>
+            sellerToken ? (
+              <SellerPage token={sellerToken} room={room} />
+            ) : (
+              <p>🔄 Đang lấy token người bán...</p>
+            )
           }
         />
         <Route
           path="/viewer"
           element={
-            <>
-              <h1>🧪 Viewer route đang hoạt động</h1>
-              <p>📦 Token: {viewerToken || 'Đang lấy...'}</p>
-            </>
+            viewerToken ? (
+              <ViewerPage token={viewerToken} room={room} />
+            ) : (
+              <p>🔄 Đang lấy token người xem...</p>
+            )
           }
         />
       </Routes>
