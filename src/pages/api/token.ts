@@ -30,14 +30,10 @@ module.exports = function handler(req, res) {
       canSubscribe: true,
     };
 
-    const token = new AccessToken(apiKey, apiSecret, {
-      identity,
-    });
-
+    const token = new AccessToken(apiKey, apiSecret, { identity });
     token.addGrant(grant);
 
     const jwt = token.toJwt();
-
     return res.status(200).json({ token: jwt });
   } catch (error) {
     console.error('❌ Token creation failed:', error);
