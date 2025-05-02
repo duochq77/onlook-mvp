@@ -20,16 +20,22 @@ module.exports = (req, res) => {
       return res.status(500).json({ error: 'Missing LiveKit API credentials' });
     }
 
-    const token = new AccessToken(apiKey, apiSecret, { identity });
-    token.addGrant({
+    const at = new AccessToken(apiKey, apiSecret, {
+      identity: identity,
+    });
+
+    at.addGrant({
       room,
       roomJoin: true,
       canPublish: role === 'publisher',
-      canSubscribe: true
+      canSubscribe: true,
     });
 
-    // ✅ DÙNG HÀM SYNC
-    const jwt = token.toJwt();
+    // ✅ CHỈ DÙNG toJwt() — và phải đảm bảo là hàm sync
+    const jwt = at.toJwt(); // <- Chuỗi JWT token thực
+
+    // ✅ Kiểm tra token in ra
+    console.log('🔐 JWT:', jwt);
 
     return res.status(200).json({ token: jwt });
   } catch (error) {
