@@ -7,10 +7,13 @@ function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null);
   const [viewerToken, setViewerToken] = useState<string | null>(null);
   const room = 'a';
-  const apiBase = '';
+
+  // ✅ Sử dụng biến môi trường để linh hoạt khi tách backend
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE || '';
 
   useEffect(() => {
-    fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}`)
+    // ✅ Gọi đúng API cấp token cho seller
+    fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}&role=publisher`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📦 Seller Token:', data.token);
@@ -18,7 +21,8 @@ function App() {
       })
       .catch((err) => console.error('❌ Lỗi lấy token seller:', err));
 
-    fetch(`${apiBase}/api/token?room=${room}&identity=viewer-${room}`)
+    // ✅ Gọi đúng API cấp token cho viewer
+    fetch(`${apiBase}/api/token?room=${room}&identity=viewer-${room}&role=viewer`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📦 Viewer Token:', data.token);

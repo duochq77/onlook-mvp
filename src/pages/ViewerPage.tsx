@@ -11,13 +11,13 @@ function ViewerPage({ token, room }: ViewerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.LIVEKIT_URL}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       connect
       video={true}
       audio={true}
     >
       <h2>👀 Người xem đang theo dõi phòng: {room}</h2>
-      <GridLayout tracks={[{ source: 'camera', withPlaceholder: true }]} >
+      <GridLayout tracks={[{ source: 'camera', withPlaceholder: true }]}>
         <ParticipantTile />
       </GridLayout>
     </LiveKitRoom>
