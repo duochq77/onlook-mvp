@@ -1,30 +1,26 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { AccessToken } from 'livekit-server-sdk';
-import { v4 as uuidv4 } from 'uuid';
 
-export default async function handler(req: any, res: any) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', 'https://www.onlookmarket.live');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   const { room, identity, role } = req.query;
 
   if (!room || !identity || !role) {
-    return res.status(400).json({ error: 'Thiếu room, identity hoặc role' });
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const apiKey = process.env.LIVEKIT_API_KEY!;
-  const apiSecret = process.env.LIVEKIT_API_SECRET!;
-
-  const token = new AccessToken(apiKey, apiSecret, {
-    identity: identity || uuidv4(),
+  const token = new AccessToken(process.env.LIVEKIT_API_KEY!, process.env.LIVEKIT_API_SECRET!, {
+    identity: identity as string,
   });
 
-  if (role === 'publisher') {
-    token.addGrant({ roomJoin: true, room, canPublish: true, canSubscribe: true });
-  } else {
-    token.addGrant({ roomJoin: true, room, canSubscribe: true });
-  }
+  token.addGrant({
+    room: room as string,
+    roomJoin: true,
+    canPublish: role === 'publisher',
+    canSubscribe: true,
+  });
 
-  const jwt = await token.toJwt();
-  res.status(200).json({ token: jwt });
+  res.json({ token: token.toJwt() });
 }
+
