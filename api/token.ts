@@ -8,6 +8,9 @@ const livekitHost = process.env.LIVEKIT_HOST!;
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { room, identity, role } = req.query;
 
+  // Log thông tin để kiểm tra
+  console.log(`[TOKEN_REQUEST] room=${room}, identity=${identity}, role=${role}`);
+
   if (!room || !identity || !role) {
     return res.status(400).json({ error: 'Missing room, identity, or role' });
   }
