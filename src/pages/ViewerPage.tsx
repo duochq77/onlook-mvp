@@ -2,11 +2,11 @@ import React from 'react';
 import {
   LiveKitRoom,
   useTracks,
-  ParticipantTile,
   GridLayout,
   TrackReferenceOrPlaceholder,
+  Track,
 } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { TrackTileRenderer } from '../components/TrackTileRenderer';
 
 interface ViewerPageProps {
   token: string;
@@ -36,7 +36,7 @@ function ViewerPage({ token, room }: ViewerPageProps) {
     >
       <h2>👀 Đang xem phòng: {room}</h2>
       <GridLayout tracks={filteredTracks}>
-        {(trackRef: TrackReferenceOrPlaceholder) => <ParticipantTile trackRef={trackRef} />}
+        {({ trackRef }) => <TrackTileRenderer trackRef={trackRef} />}
       </GridLayout>
     </LiveKitRoom>
   );
