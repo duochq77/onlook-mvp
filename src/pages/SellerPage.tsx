@@ -1,10 +1,10 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react';
+import { LiveKitRoom, useTracks, VideoTrack } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { getToken } from '../services/api';
 
-const SellerContent = () => {
+const SellerContent: React.FC = () => {
   const tracks = useTracks([Track.Source.Camera, Track.Source.Microphone]);
 
   return (
@@ -27,7 +27,7 @@ const SellerPage: React.FC = () => {
     getToken(room, 'seller', 'publisher').then(setToken);
   }, [room]);
 
-  if (!token) return <div>🔐 Đang lấy token...</div>;
+  if (!token) return <div>🔐 Đang lấy token cho phòng {room}...</div>;
 
   return (
     <LiveKitRoom token={token} serverUrl={process.env.LIVEKIT_URL} connect={true}>
