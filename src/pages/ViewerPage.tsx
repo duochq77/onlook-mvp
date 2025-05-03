@@ -1,42 +1,44 @@
-import React, { useEffect } from 'react';
-import { LiveKitRoom, ParticipantTile, GridLayout } from '@livekit/components-react';
+import React from 'react';
+import { LiveKitRoom, ParticipantTile, GridLayout, useTracks } from '@livekit/components-react';
+import { Track } from 'livekit-client';
+import '@livekit/components-styles';
 
 interface ViewerPageProps {
   token: string;
   room: string;
 }
 
-function ViewerPage({ token, room }: ViewerPageProps) {
-  useEffect(() => {
-    const tryResumeAudio = () => {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume().then(() => {
-          console.log('✅ AudioContext resumed silently.');
-        });
-      }
-    };
+export default function ViewerPage({ token, room }: ViewerPageProps) {
+  const tracks = useTracks([
+    { source: Track.Source.Camera, withPlaceholder: true },
+    { source: Track.Source.Microphone, withPlaceholder: true },
+  ]);
 
-    // Tự động resume sau 1 giây mà không cần thao tác người dùng
-    setTimeout(tryResumeAudio, 1000);
-  }, []);
-
-  if (!token) return <p>❌ Thiếu token</p>;
+  if (!token) return <p>❌ Thiếu token người xem</p>;
 
   return (
     <LiveKitRoom
       token={token}
       serverUrl={process.env.VITE_LIVEKIT_URL}
-      connect
-      video
-      audio
+      connect={true}
+      video={true}
+      audio={true}
+      onConnected={() => {
+        console.log('👀 Viewer đã kết nối phòng');
+      }}
     >
-      <h2>👀 Người xem đang theo dõi phòng: {room}</h2>
-      <GridLayout tracks={[{ source: 'camera', withPlaceholder: true }]}>
-        <ParticipantTile />
+      <h2>🎥 Đang xem livestream phòng: {room}</h2>
+      <GridLayout tracks={tracks}>
+        {tracks.map(({ publication, participant }, index) =>
+          publication ? (
+            <ParticipantTile
+              key={index}
+              publication={publication}
+              participant={participant}
+            />
+          ) : null
+        )}
       </GridLayout>
     </LiveKitRoom>
   );
 }
-
-export default ViewerPage;
