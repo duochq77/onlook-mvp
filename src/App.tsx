@@ -1,52 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SellerPage from './pages/SellerPage';
 import ViewerPage from './pages/ViewerPage';
-import { fetchToken } from './services/api';
 
-const room = 'a';
-
-function App() {
-  const [sellerToken, setSellerToken] = useState<string | null>(null);
-  const [viewerToken, setViewerToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadTokens = async () => {
-      const seller = await fetchToken({ room, identity: `seller-${room}`, role: 'publisher' });
-      const viewer = await fetchToken({ room, identity: `viewer-${room}`, role: 'subscriber' });
-      setSellerToken(seller);
-      setViewerToken(viewer);
-    };
-    loadTokens();
-  }, []);
-
+const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/viewer" />} />
-        <Route
-          path="/seller"
-          element={
-            sellerToken ? (
-              <SellerPage token={sellerToken} room={room} />
-            ) : (
-              <p>🔄 Đang lấy token người bán...</p>
-            )
-          }
-        />
-        <Route
-          path="/viewer"
-          element={
-            viewerToken ? (
-              <ViewerPage token={viewerToken} room={room} />
-            ) : (
-              <p>🔄 Đang lấy token người xem...</p>
-            )
-          }
-        />
+        <Route path="/seller/:room" element={<SellerPage />} />
+        <Route path="/viewer/:room" element={<ViewerPage />} />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
