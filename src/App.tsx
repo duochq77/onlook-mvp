@@ -11,8 +11,13 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchToken({ room, identity: `seller-${room}`, role: 'publisher' }).then(setSellerToken);
-    fetchToken({ room, identity: `viewer-${room}`, role: 'subscriber' }).then(setViewerToken);
+    const loadTokens = async () => {
+      const seller = await fetchToken({ room, identity: `seller-${room}`, role: 'publisher' });
+      const viewer = await fetchToken({ room, identity: `viewer-${room}`, role: 'subscriber' });
+      setSellerToken(seller);
+      setViewerToken(viewer);
+    };
+    loadTokens();
   }, []);
 
   return (

@@ -1,26 +1,24 @@
 import React from 'react';
-import { LiveKitRoom } from '@livekit/components-react';
+import { LiveKitRoom, VideoConference } from '@livekit/components-react';
 
 interface SellerPageProps {
   token: string;
   room: string;
 }
 
-function SellerPage({ token, room }: SellerPageProps) {
+const SellerPage: React.FC<SellerPageProps> = ({ token, room }) => {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-      connect
-      video
-      audio
-      onConnected={() => {
-        console.log(`📡 Người bán đã kết nối vào phòng: ${room}`);
-      }}
+      serverUrl={process.env.VITE_LIVEKIT_URL}
+      connectOptions={{ autoSubscribe: false }}
+      video={true}
+      audio={true}
     >
-      <h2>🎥 Livestream từ người bán - Phòng: {room}</h2>
+      <h2>🔴 Đang phát livestream từ người bán</h2>
+      <VideoConference />
     </LiveKitRoom>
   );
-}
+};
 
 export default SellerPage;

@@ -1,5 +1,9 @@
+// src/pages/ViewerPage.tsx
 import React from 'react';
-import { LiveKitRoom, useTracks, GridLayout, TrackReferenceOrPlaceholder } from '@livekit/components-react';
+import { useTracks, TrackReferenceOrPlaceholder } from '@livekit/components-react';
+import { Track } from 'livekit-client';
+import { useEffect, useState } from 'react';
+import { LiveKitRoom } from '@livekit/components-react';
 import TrackTileRenderer from '../components/TrackTileRenderer';
 
 interface ViewerPageProps {
@@ -7,32 +11,32 @@ interface ViewerPageProps {
   room: string;
 }
 
-function ViewerPage({ token, room }: ViewerPageProps) {
-  const tracks = useTracks();
+const ViewerPage: React.FC<ViewerPageProps> = ({ token, room }) => {
+  const [mounted, setMounted] = useState(false);
 
-  const activeTracks = tracks.filter(
-    (t) => t.publication?.track !== undefined
-  );
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-      connect
-      video
-      audio
-      onConnected={() => {
-        console.log(`👀 Viewer connected to room: ${room}`);
-      }}
+      serverUrl={process.env.VITE_LIVEKIT_URL}
+      connect={true}
+      onDisconnected={() => console.log('🔌 Đã ngắt kết nối khỏi phòng')}
     >
-      <h2>👀 Đang xem phòng: {room}</h2>
-      <GridLayout tracks={activeTracks}>
-        {(trackRef: TrackReferenceOrPlaceholder) => (
+      <h2>🎥 Đang xem livestream...</h2>
+      <Tracks
+        stageTracks
+        sortTracks="publishTime"
+        render={({ trackRef }: { trackRef: TrackReferenceOrPlaceholder }) => (
           <TrackTileRenderer trackRef={trackRef} />
         )}
-      </GridLayout>
+      />
     </LiveKitRoom>
   );
-}
+};
 
 export default ViewerPage;

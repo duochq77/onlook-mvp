@@ -1,20 +1,17 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '/api/token';
-
-export async function fetchToken({
-  room,
-  identity,
-  role,
-}: {
+type FetchTokenParams = {
   room: string;
   identity: string;
-  role: string;
-}): Promise<string | null> {
+  role: 'publisher' | 'subscriber';
+};
+
+export async function fetchToken({ room, identity, role }: FetchTokenParams): Promise<string | null> {
   try {
-    const res = await fetch(`${API_BASE}?room=${room}&identity=${identity}&role=${role}`);
-    const data = await res.json();
+    const url = `/api/token?room=${room}&identity=${identity}&role=${role}`;
+    const response = await fetch(url);
+    const data = await response.json();
     return data.token;
-  } catch (err) {
-    console.error(`❌ Lỗi gọi token API [${role}]:`, err);
+  } catch (error) {
+    console.error('❌ Lỗi khi lấy token:', error);
     return null;
   }
 }
