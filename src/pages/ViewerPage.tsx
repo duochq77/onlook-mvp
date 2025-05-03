@@ -1,12 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  LiveKitRoom,
-  ParticipantTile,
-  GridLayout,
-  useTracks,
-  TrackReferenceOrPlaceholder,
-} from '@livekit/components-react';
-import { RoomEvent, Track } from 'livekit-client';
+import { LiveKitRoom, useTracks, ParticipantTile, GridLayout } from '@livekit/components-react';
+import { Track } from 'livekit-client';
 
 interface ViewerPageProps {
   token: string;
@@ -14,25 +7,13 @@ interface ViewerPageProps {
 }
 
 function ViewerPage({ token, room }: ViewerPageProps) {
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const audioStarted = useRef(false);
+  const tracks = useTracks([
+    { source: Track.Source.Camera, withPlaceholder: true },
+    { source: Track.Source.Microphone },
+  ]);
 
-  // Bắt sự kiện click đầu tiên để kích hoạt âm thanh
-  useEffect(() => {
-    const handleClick = () => {
-      if (!audioStarted.current) {
-        const ctx = new AudioContext();
-        ctx.resume().then(() => {
-          console.log('🔊 AudioContext resumed');
-          setAudioEnabled(true);
-        });
-        audioStarted.current = true;
-      }
-    };
-
-    window.addEventListener('click', handleClick, { once: true });
-    return () => window.removeEventListener('click', handleClick);
-  }, []);
+  const filteredTracks = tracks
+    .filter(trackRef => trackRef.publication?.track !== undefined); // ✅ Tránh lỗi undefined
 
   return (
     <LiveKitRoom
@@ -40,13 +21,11 @@ function ViewerPage({ token, room }: ViewerPageProps) {
       serverUrl={process.env.VITE_LIVEKIT_URL}
       connect
       video
-      audio={audioEnabled}
+      audio
     >
-      <h2>👀 Đang xem livestream phòng: {room}</h2>
-      <GridLayout tracks={useTracks([{ source: Track.Source.Camera }]).filter(Boolean)}>
-        {(track: TrackReferenceOrPlaceholder) =>
-          track.publication ? <ParticipantTile trackRef={track} /> : null
-        }
+      <h2>👀 Đang xem phòng: {room}</h2>
+      <GridLayout tracks={filteredTracks}>
+        {(trackRef) => <ParticipantTile trackRef={trackRef} />}
       </GridLayout>
     </LiveKitRoom>
   );
