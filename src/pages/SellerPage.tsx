@@ -1,3 +1,4 @@
+import React from 'react';
 import { LiveKitRoom } from '@livekit/components-react';
 
 interface SellerPageProps {
@@ -6,16 +7,10 @@ interface SellerPageProps {
 }
 
 function SellerPage({ token, room }: SellerPageProps) {
-  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
-
-  if (!serverUrl) {
-    return <p>❌ Thiếu cấu hình LiveKit URL (NEXT_PUBLIC_LIVEKIT_URL)</p>;
-  }
-
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={serverUrl}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       connect
       video
       audio
@@ -23,7 +18,7 @@ function SellerPage({ token, room }: SellerPageProps) {
         console.log(`📡 Người bán đã kết nối vào phòng: ${room}`);
       }}
     >
-      <h2>🎥 Livestream từ người bán – Phòng: {room}</h2>
+      <h2>🎥 Livestream từ người bán - Phòng: {room}</h2>
     </LiveKitRoom>
   );
 }
