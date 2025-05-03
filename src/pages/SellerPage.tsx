@@ -1,12 +1,13 @@
-import { LiveKitRoom } from '@livekit/components-react';
+import React from 'react'
+import { LiveKitRoom } from '@livekit/components-react'
 
 interface SellerPageProps {
-  token: string;
-  room: string;
+  token: string
+  room: string
 }
 
-function SellerPage({ token, room }: SellerPageProps) {
-  if (!token) return <p>❌ Thiếu token</p>;
+export default function SellerPage({ token, room }: SellerPageProps) {
+  if (!token) return <p>❌ Thiếu token</p>
 
   return (
     <LiveKitRoom
@@ -18,7 +19,5 @@ function SellerPage({ token, room }: SellerPageProps) {
     >
       <h2>📡 Livestream đang phát từ người bán: {room}</h2>
     </LiveKitRoom>
-  );
+  )
 }
-
-export default SellerPage;

@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-// ✅ Dùng require để tránh lỗi "Cannot use import statement outside a module"
-const livekit = require('livekit-server-sdk')
-const uuid = require('uuid')
+import { AccessToken } from 'livekit-server-sdk'
+import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { room, identity, role } = req.query
@@ -12,16 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const apiKey = process.env.LIVEKIT_API_KEY
-    const apiSecret = process.env.LIVEKIT_API_SECRET
+    const apiKey = process.env.LIVEKIT_API_KEY!
+    const apiSecret = process.env.LIVEKIT_API_SECRET!
 
-    if (!apiKey || !apiSecret) {
-      console.error('LIVEKIT_API_KEY or LIVEKIT_API_SECRET is missing')
-      return res.status(500).json({ error: 'Server config error' })
-    }
-
-    const token = new livekit.AccessToken(apiKey, apiSecret, {
-      identity: identity as string || uuid.v4(),
+    const token = new AccessToken(apiKey, apiSecret, {
+      identity: identity as string || uuidv4(),
     })
 
     token.addGrant({
@@ -33,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const jwt = await token.toJwt()
     res.status(200).json({ token: jwt })
-  } catch (err: any) {
+  } catch (err) {
     console.error('Token generation failed:', err)
     res.status(500).json({ error: 'Token generation failed' })
   }

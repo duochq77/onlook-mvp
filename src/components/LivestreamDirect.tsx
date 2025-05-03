@@ -1,7 +1,6 @@
+import React, { useEffect } from 'react'
 import { useMediaDevices } from '@livekit/components-react'
-import { useEffect } from 'react'
 
-// ✅ Chọn loại thiết bị cần lấy, ví dụ: 'videoinput' để lấy camera
 export default function LivestreamDirect() {
   const videoDevices = useMediaDevices({ kind: 'videoinput' })
 

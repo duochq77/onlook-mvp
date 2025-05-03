@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 export default function VideoUploadRelay() {
   useEffect(() => {
@@ -8,15 +8,16 @@ export default function VideoUploadRelay() {
 
     if (video && typeof video.captureStream === 'function') {
       const stream = video.captureStream()
-      console.log('Captured stream:', stream)
+      console.log('✅ Captured stream:', stream)
     } else {
-      console.warn('captureStream is not supported in this browser.')
+      console.warn('⚠️ Trình duyệt này không hỗ trợ captureStream().')
     }
   }, [])
 
   return (
     <div>
-      <video src="/sample.mp4" controls></video>
+      <h2>🔁 Phát lại video từ file</h2>
+      <video src="/sample.mp4" controls width="480" />
     </div>
   )
 }

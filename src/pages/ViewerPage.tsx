@@ -1,12 +1,17 @@
-import { LiveKitRoom, ParticipantTile, GridLayout } from '@livekit/components-react';
+import React from 'react'
+import {
+  LiveKitRoom,
+  ParticipantTile,
+  GridLayout,
+} from '@livekit/components-react'
 
 interface ViewerPageProps {
-  token: string;
-  room: string;
+  token: string
+  room: string
 }
 
-function ViewerPage({ token, room }: ViewerPageProps) {
-  if (!token) return <p>❌ Thiếu token</p>;
+export default function ViewerPage({ token, room }: ViewerPageProps) {
+  if (!token) return <p>❌ Thiếu token</p>
 
   return (
     <LiveKitRoom
@@ -21,7 +26,5 @@ function ViewerPage({ token, room }: ViewerPageProps) {
         <ParticipantTile />
       </GridLayout>
     </LiveKitRoom>
-  );
+  )
 }
-
-export default ViewerPage;

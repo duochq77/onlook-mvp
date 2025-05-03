@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { signIn } from '../utils/authUtils'
 
 export default function LoginPage() {
@@ -8,27 +8,35 @@ export default function LoginPage() {
   const handleLogin = async () => {
     try {
       const result = await signIn(email, password)
-      console.log('Logged in:', result)
+      console.log('✅ Logged in:', result)
     } catch (err) {
-      console.error('Login failed:', err)
+      console.error('❌ Login failed:', err)
     }
   }
 
   return (
     <div>
-      <h2>Đăng nhập</h2>
-      <input
-        type="email"
-        value={email}
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        value={password}
-        placeholder="Mật khẩu"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      <h2>🔐 Đăng nhập</h2>
+      <div>
+        <input
+          type="email"
+          value={email}
+          placeholder="Email"
+          aria-label="Email"
+          autoComplete="email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div>
+        <input
+          type="password"
+          value={password}
+          placeholder="Mật khẩu"
+          aria-label="Mật khẩu"
+          autoComplete="current-password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
       <button onClick={handleLogin}>Đăng nhập</button>
     </div>
   )
