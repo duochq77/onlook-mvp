@@ -1,9 +1,9 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
-import Dotenv from 'dotenv-webpack'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Dotenv from 'dotenv-webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
   entry: './src/main.tsx',
@@ -12,7 +12,7 @@ export default {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     publicPath: '/',
-    clean: true, // ✅ xoá sạch dist trước mỗi lần build
+    clean: true,
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
@@ -32,18 +32,14 @@ export default {
   },
   devServer: {
     static: './public',
-    historyApiFallback: true, // ✅ hỗ trợ react-router-dom
+    historyApiFallback: true,
     port: 8080,
     open: true,
   },
   plugins: [
-    new Dotenv(), // ✅ hỗ trợ .env
+    new Dotenv(),
     new HtmlWebpackPlugin({
-      template: './public/index.html',
-      favicon: './public/favicon.ico', // ✅ nếu có
+      template: './public/index.html'
     }),
   ],
-  experiments: {
-    topLevelAwait: true, // ✅ hỗ trợ nếu bạn dùng await ngoài async fn
-  },
-}
+};
