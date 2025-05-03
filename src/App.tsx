@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import SellerPage from './pages/SellerPage'
 import ViewerPage from './pages/ViewerPage'
 
-export default function App() {
+function App() {
   const [sellerToken, setSellerToken] = useState<string | null>(null)
   const [viewerToken, setViewerToken] = useState<string | null>(null)
   const room = 'a'
-  const apiBase = 'https://onlookmarket.live'
+  const apiBase = '/api/token' // 🟢 Gọi nội bộ đúng Vercel chuẩn
 
   useEffect(() => {
-    fetch(`${apiBase}/api/token?room=${room}&identity=seller-${room}&role=publisher`)
-      .then(res => res.json())
-      .then(data => setSellerToken(data.token))
-      .catch(err => console.error('❌ Lỗi lấy token seller:', err))
+    fetch(`${apiBase}?room=${room}&identity=seller-${room}&role=publisher`)
+      .then((res) => res.json())
+      .then((data) => setSellerToken(data.token))
+      .catch((err) => console.error('❌ Lỗi lấy token seller:', err))
 
-    fetch(`${apiBase}/api/token?room=${room}&identity=viewer-${room}&role=subscriber`)
-      .then(res => res.json())
-      .then(data => setViewerToken(data.token))
-      .catch(err => console.error('❌ Lỗi lấy token viewer:', err))
+    fetch(`${apiBase}?room=${room}&identity=viewer-${room}&role=subscriber`)
+      .then((res) => res.json())
+      .then((data) => setViewerToken(data.token))
+      .catch((err) => console.error('❌ Lỗi lấy token viewer:', err))
   }, [])
 
   return (
@@ -49,3 +49,5 @@ export default function App() {
     </Router>
   )
 }
+
+export default App
