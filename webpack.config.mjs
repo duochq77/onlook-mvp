@@ -9,9 +9,9 @@ export default {
   entry: './src/main.tsx',
   mode: 'production',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'public'), // ⬅ CHUYỂN VỀ public/
     filename: 'bundle.js',
-    publicPath: '/', // hoặc '' nếu bạn muốn load ở root
+    publicPath: '/', // phục vụ từ root /
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
