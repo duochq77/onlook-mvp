@@ -1,3 +1,4 @@
+// api/token.ts
 import { AccessToken } from 'livekit-server-sdk';
 
 export default async function handler(req: any, res: any) {
@@ -10,9 +11,7 @@ export default async function handler(req: any, res: any) {
   const apiKey = process.env.LIVEKIT_API_KEY;
   const apiSecret = process.env.LIVEKIT_API_SECRET;
 
-  const at = new AccessToken(apiKey, apiSecret, {
-    identity,
-  });
+  const at = new AccessToken(apiKey, apiSecret, { identity });
 
   at.addGrant({
     room,
