@@ -11,7 +11,7 @@ export default {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/',
+    publicPath: '/', // hoặc '' nếu bạn muốn load ở root
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],

@@ -16,12 +16,11 @@ const SellerPage: React.FC = () => {
       token={token ?? ''}
       serverUrl={serverUrl}
       connect={true}
-      video={true} // Phát video từ webcam
-      audio={true} // Phát audio từ micro
+      video={true}
+      audio={true}
     >
       <div className="seller-stream">
         <h2>Đang phát livestream tại phòng: {room}</h2>
-        {/* LiveKit tự động phát webcam + mic */}
       </div>
     </LiveKitRoom>
   );
