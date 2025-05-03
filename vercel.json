@@ -1,9 +1,6 @@
 {
-  "builds": [],
-  "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "static": {
-    "public": true
-  }
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
