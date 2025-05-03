@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.onlookmarket.live" }],
+      "destination": "https://onlookmarket.live/:1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
