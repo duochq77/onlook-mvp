@@ -1,7 +1,5 @@
-// api/endLivestream.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Tạm thời không lưu DB, chỉ log kết thúc
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
