@@ -1,59 +1,59 @@
-import React, { useState } from 'react';
-import { saveTransaction } from '../utils/saveTransaction';
+import React from 'react';
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
 
 interface CartProps {
-  livestreamId: string;
-  buyerId: string;
-  selectedProduct: any;
+  items: CartItem[];
+  onRemove: (id: string) => void;
+  onCheckout: () => void;
 }
 
-export default function Cart({ livestreamId, buyerId, selectedProduct }: CartProps) {
-  const [quantity, setQuantity] = useState(1);
-  const [status, setStatus] = useState('');
-
-  const handleOrder = async () => {
-    if (!selectedProduct) return;
-
-    const transaction = {
-      buyer_id: buyerId,
-      product_id: selectedProduct.id,
-      livestream_id: livestreamId,
-      quantity,
-      price: selectedProduct.price,
-    };
-
-    const { error } = await saveTransaction(transaction);
-
-    if (error) {
-      setStatus('Giao dịch thất bại.');
-    } else {
-      setStatus('Đặt hàng thành công!');
-    }
-  };
-
-  if (!selectedProduct) return null;
+const Cart: React.FC<CartProps> = ({ items, onRemove, onCheckout }) => {
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="bg-white p-3 rounded shadow">
-      <h3 className="font-bold">{selectedProduct.name}</h3>
-      <p>Giá: {selectedProduct.price}đ</p>
-      <div className="flex items-center mt-2">
-        <label className="mr-2">Số lượng:</label>
-        <input
-          type="number"
-          value={quantity}
-          min={1}
-          onChange={(e) => setQuantity(parseInt(e.target.value))}
-          className="border p-1 w-16"
-        />
-      </div>
-      <button
-        onClick={handleOrder}
-        className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Mua ngay
-      </button>
-      {status && <p className="mt-2 text-sm">{status}</p>}
+    <div className="cart p-4 border rounded-xl shadow bg-white max-w-sm">
+      <h2 className="text-lg font-semibold mb-3">🛒 Giỏ hàng</h2>
+      {items.length === 0 ? (
+        <p className="text-gray-500">Chưa có sản phẩm nào.</p>
+      ) : (
+        <ul className="space-y-2">
+          {items.map((item) => (
+            <li key={item.id} className="flex justify-between items-center">
+              <div>
+                <p className="font-medium">{item.name}</p>
+                <p className="text-sm text-gray-500">
+                  {item.quantity} x {item.price.toLocaleString()}₫
+                </p>
+              </div>
+              <button
+                className="text-red-500 text-sm hover:underline"
+                onClick={() => onRemove(item.id)}
+              >
+                Xóa
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {items.length > 0 && (
+        <div className="mt-4">
+          <p className="font-bold">Tổng cộng: {total.toLocaleString()}₫</p>
+          <button
+            onClick={onCheckout}
+            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600"
+          >
+            Thanh toán
+          </button>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default Cart;

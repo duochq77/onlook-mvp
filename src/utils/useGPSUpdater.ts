@@ -1,23 +1,41 @@
-import { useEffect } from 'react';
-import { supabase } from './authUtils';
+// src/utils/useGPSUpdater.ts
 
-export function useGPSUpdater() {
+import { useEffect, useState } from 'react';
+
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export const useGPSUpdater = (): Coordinates | null => {
+  const [coords, setCoords] = useState<Coordinates | null>(null);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (!navigator.geolocation) return;
+    const updateLocation = () => {
+      if (!navigator.geolocation) {
+        console.warn('Geolocation is not supported by this browser.');
+        return;
+      }
 
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const user = await supabase.auth.getUser();
-        if (!user.data.user) return;
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCoords({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+        },
+        { enableHighAccuracy: true }
+      );
+    };
 
-        const { latitude, longitude } = position.coords;
-        await supabase
-          .from('users')
-          .update({ lat: latitude, lng: longitude })
-          .eq('id', user.data.user.id);
-      });
-    }, 60_000); // cập nhật mỗi phút
+    updateLocation();
+    const interval = setInterval(updateLocation, 60000); // cập nhật mỗi 60 giây
 
     return () => clearInterval(interval);
   }, []);
-}
+
+  return coords;
+};

@@ -1,23 +1,40 @@
-import React, { useEffect } from 'react'
+import React, { useRef } from 'react';
 
-export default function VideoUploadRelay() {
-  useEffect(() => {
-    const video = document.querySelector('video') as HTMLVideoElement & {
-      captureStream?: () => MediaStream
-    }
+interface Props {
+  onVideoSelected: (file: File) => void;
+}
 
-    if (video && typeof video.captureStream === 'function') {
-      const stream = video.captureStream()
-      console.log('✅ Captured stream:', stream)
-    } else {
-      console.warn('⚠️ Trình duyệt này không hỗ trợ captureStream().')
+const VideoUploadRelay: React.FC<Props> = ({ onVideoSelected }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onVideoSelected(file);
     }
-  }, [])
+  };
+
+  const triggerUpload = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
-    <div>
-      <h2>🔁 Phát lại video từ file</h2>
-      <video src="/sample.mp4" controls width="480" />
+    <div className="my-4">
+      <button
+        onClick={triggerUpload}
+        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md"
+      >
+        Tải video lên để phát
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="video/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
     </div>
-  )
-}
+  );
+};
+
+export default VideoUploadRelay;

@@ -1,28 +1,32 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+import eslintPluginReact from 'eslint-plugin-react';
+import eslintPluginImport from 'eslint-plugin-import';
+import eslintPluginJsxA11y from 'eslint-plugin-jsx-a11y';
 
-export default tseslint.config(
-  { ignores: ['dist'] },
+export default [
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['node_modules', 'dist'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './tsconfig.json',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
     plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
+      react: eslintPluginReact,
+      import: eslintPluginImport,
+      jsxA11y: eslintPluginJsxA11y,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react/jsx-uses-react': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'import/order': ['warn', { 'alphabetize': { order: 'asc' } }],
+      'jsx-a11y/alt-text': 'warn',
+      'no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn'],
     },
   },
-)
+];

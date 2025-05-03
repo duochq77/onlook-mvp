@@ -1,40 +1,52 @@
 // src/pages/ViewerPage.tsx
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { LiveKitRoom, useTracks, VideoTrack } from '@livekit/components-react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react';
+import '@livekit/components-styles';
 import { Track } from 'livekit-client';
-import { getToken } from '../services/api';
-
-const ViewerContent: React.FC = () => {
-  const tracks = useTracks([Track.Source.Camera]);
-
-  return (
-    <>
-      {tracks.map((trackRef) =>
-        trackRef.publication?.track ? (
-          <VideoTrack key={trackRef.publication.trackSid} trackRef={trackRef} />
-        ) : null
-      )}
-    </>
-  );
-};
 
 const ViewerPage: React.FC = () => {
-  const location = useLocation();
-  const room = location.pathname.split('/').pop() || 'default-room';
-  const [token, setToken] = React.useState<string | null>(null);
+  const { room } = useParams<{ room: string }>();
+  const [token, setToken] = useState<string | null>(null);
+  const identity = `viewer-${room}`;
+  const serverUrl = process.env.VITE_LIVEKIT_URL || '';
 
-  React.useEffect(() => {
-    getToken(room, 'viewer', 'subscriber').then(setToken);
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const res = await fetch(`/api/token?room=${room}&identity=${identity}&role=subscriber`);
+        const data = await res.json();
+        setToken(data.token);
+      } catch (err) {
+        console.error('Error fetching token', err);
+      }
+    };
+    fetchToken();
   }, [room]);
 
-  if (!token) return <div>🔓 Đang vào phòng xem livestream...</div>;
+  const TrackRenderer = () => {
+    const tracks = useTracks([Track.Source.Camera, Track.Source.Microphone], { onlySubscribed: true });
+    return (
+      <>
+        {tracks.map(({ publication, participant }, i) => (
+          <VideoTrack key={i} trackRef={publication} />
+        ))}
+      </>
+    );
+  };
+
+  if (!token) return <div>Đang tải video...</div>;
 
   return (
-    <LiveKitRoom token={token} serverUrl={process.env.LIVEKIT_URL} connect={true}>
-      <h2>👀 Đang xem livestream phòng: {room}</h2>
-      <ViewerContent />
-    </LiveKitRoom>
+    <div style={{ height: '100vh' }}>
+      <LiveKitRoom
+        token={token}
+        serverUrl={serverUrl}
+        connect={true}
+      >
+        <TrackRenderer />
+      </LiveKitRoom>
+    </div>
   );
 };
 
