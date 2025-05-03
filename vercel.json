@@ -1,12 +1,9 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/token",
-      "destination": "/api/token.ts"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "builds": [],
+  "routes": [
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "static": {
+    "public": true
+  }
 }
