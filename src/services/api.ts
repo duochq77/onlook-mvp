@@ -1,22 +1,18 @@
-interface FetchTokenParams {
-  room: string;
-  identity: string;
-  role: 'publisher' | 'subscriber';
-}
-
-export async function fetchToken({
+export async function getToken({
   room,
   identity,
   role,
-}: FetchTokenParams): Promise<string | null> {
-  const base = process.env.NEXT_PUBLIC_API_BASE || '/api/token';
-
+}: {
+  room: string
+  identity: string
+  role: 'publisher' | 'subscriber'
+}): Promise<string | null> {
   try {
-    const res = await fetch(`${base}?room=${room}&identity=${identity}&role=${role}`);
+    const res = await fetch(`/api/token?room=${room}&identity=${identity}&role=${role}`);
     const data = await res.json();
-    return data.token;
+    return data.token || null;
   } catch (err) {
-    console.error(`❌ Lỗi gọi API token (${role}):`, err);
+    console.error('❌ Lỗi lấy token từ API:', err);
     return null;
   }
 }

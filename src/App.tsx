@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import SellerPage from './pages/SellerPage'
-import ViewerPage from './pages/ViewerPage'
-import { fetchToken } from './services/api'
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SellerPage from './pages/SellerPage';
+import ViewerPage from './pages/ViewerPage';
+import { getToken } from './services/api';
 
-const room = 'a'
+const room = 'a';
 
 function App() {
-  const [sellerToken, setSellerToken] = useState<string | null>(null)
-  const [viewerToken, setViewerToken] = useState<string | null>(null)
+  const [sellerToken, setSellerToken] = useState<string | null>(null);
+  const [viewerToken, setViewerToken] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchToken({ room, identity: `seller-${room}`, role: 'publisher' }).then(setSellerToken)
-    fetchToken({ room, identity: `viewer-${room}`, role: 'subscriber' }).then(setViewerToken)
-  }, [])
+    getToken({ room, identity: `seller-${room}`, role: 'publisher' }).then(setSellerToken);
+    getToken({ room, identity: `viewer-${room}`, role: 'subscriber' }).then(setViewerToken);
+  }, []);
 
   return (
     <Router>
@@ -41,7 +41,7 @@ function App() {
         />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
