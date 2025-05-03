@@ -4,7 +4,7 @@
     { "src": "public/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/token", "dest": "/api/token.ts" },
+    { "src": "/api/token", "dest": "api/token.ts" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
