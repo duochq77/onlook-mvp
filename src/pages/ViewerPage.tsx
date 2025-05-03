@@ -1,51 +1,55 @@
-import React from 'react';
-import { LiveKitRoom, useTracks, TrackReference, VideoTrack, AudioTrack } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { useEffect, useRef, useState } from 'react';
+import {
+  LiveKitRoom,
+  ParticipantTile,
+  GridLayout,
+  useTracks,
+  TrackReferenceOrPlaceholder,
+} from '@livekit/components-react';
+import { RoomEvent, Track } from 'livekit-client';
 
 interface ViewerPageProps {
   token: string;
   room: string;
 }
 
-function TrackRenderer({ track }: { track: TrackReference }) {
-  return (
-    <div style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-      {track.source === Track.Source.Camera && <VideoTrack trackRef={track} />}
-      {track.source === Track.Source.Microphone && <AudioTrack trackRef={track} />}
-    </div>
-  );
-}
+function ViewerPage({ token, room }: ViewerPageProps) {
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const audioStarted = useRef(false);
 
-function ViewerRoomContent() {
-  const tracks = useTracks([
-    { source: Track.Source.Camera, withPlaceholder: true },
-    { source: Track.Source.Microphone, withPlaceholder: false },
-  ]);
+  // Bắt sự kiện click đầu tiên để kích hoạt âm thanh
+  useEffect(() => {
+    const handleClick = () => {
+      if (!audioStarted.current) {
+        const ctx = new AudioContext();
+        ctx.resume().then(() => {
+          console.log('🔊 AudioContext resumed');
+          setAudioEnabled(true);
+        });
+        audioStarted.current = true;
+      }
+    };
 
-  return (
-    <div>
-      <h2>👀 Viewer is watching...</h2>
-      {tracks.map((track) =>
-        track && track.publication ? (
-          <TrackRenderer key={track.publication.trackSid} track={track} />
-        ) : null
-      )}
-    </div>
-  );
-}
-
-export default function ViewerPage({ token, room }: ViewerPageProps) {
-  if (!token) return <p>❌ Thiếu token</p>;
+    window.addEventListener('click', handleClick, { once: true });
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
 
   return (
     <LiveKitRoom
       token={token}
       serverUrl={process.env.VITE_LIVEKIT_URL}
-      connect={true}
+      connect
       video
-      audio
+      audio={audioEnabled}
     >
-      <ViewerRoomContent />
+      <h2>👀 Đang xem livestream phòng: {room}</h2>
+      <GridLayout tracks={useTracks([{ source: Track.Source.Camera }]).filter(Boolean)}>
+        {(track: TrackReferenceOrPlaceholder) =>
+          track.publication ? <ParticipantTile trackRef={track} /> : null
+        }
+      </GridLayout>
     </LiveKitRoom>
   );
 }
+
+export default ViewerPage;
