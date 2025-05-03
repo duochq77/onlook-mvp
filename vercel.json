@@ -5,6 +5,7 @@
   ],
   "routes": [
     { "src": "/api/token", "dest": "api/token.ts" },
+    { "src": "/(viewer|seller)/(.*)", "dest": "/index.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
