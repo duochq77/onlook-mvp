@@ -1,14 +1,27 @@
-import React from 'react';
-import { LiveKitRoom, GridLayout, ParticipantTile } from '@livekit/components-react';
-import '@livekit/components-styles';
+import React, { useEffect } from 'react';
+import { LiveKitRoom, ParticipantTile, GridLayout } from '@livekit/components-react';
 
 interface ViewerPageProps {
   token: string;
   room: string;
 }
 
-const ViewerPage: React.FC<ViewerPageProps> = ({ token, room }) => {
-  if (!token) return <p>❌ Thiếu token người xem</p>;
+function ViewerPage({ token, room }: ViewerPageProps) {
+  useEffect(() => {
+    const tryResumeAudio = () => {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().then(() => {
+          console.log('✅ AudioContext resumed silently.');
+        });
+      }
+    };
+
+    // Tự động resume sau 1 giây mà không cần thao tác người dùng
+    setTimeout(tryResumeAudio, 1000);
+  }, []);
+
+  if (!token) return <p>❌ Thiếu token</p>;
 
   return (
     <LiveKitRoom
@@ -18,14 +31,12 @@ const ViewerPage: React.FC<ViewerPageProps> = ({ token, room }) => {
       video
       audio
     >
-      <div className="p-4">
-        <h2>👀 Đang theo dõi phòng: {room}</h2>
-        <GridLayout tracks={[{ source: 'camera', withPlaceholder: true }]}>
-          <ParticipantTile />
-        </GridLayout>
-      </div>
+      <h2>👀 Người xem đang theo dõi phòng: {room}</h2>
+      <GridLayout tracks={[{ source: 'camera', withPlaceholder: true }]}>
+        <ParticipantTile />
+      </GridLayout>
     </LiveKitRoom>
   );
-};
+}
 
 export default ViewerPage;
