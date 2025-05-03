@@ -1,40 +1,49 @@
-// src/pages/ViewerPage.tsx
-import React from 'react';
-import { useTracks, TrackReferenceOrPlaceholder } from '@livekit/components-react';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  LiveKitRoom,
+  VideoTrack,
+  useTracks,
+  TrackReference,
+} from '@livekit/components-react';
 import { Track } from 'livekit-client';
-import { useEffect, useState } from 'react';
-import { LiveKitRoom } from '@livekit/components-react';
-import TrackTileRenderer from '../components/TrackTileRenderer';
 
-interface ViewerPageProps {
-  token: string;
-  room: string;
-}
+const ViewerPage: React.FC = () => {
+  const { room } = useParams();
 
-const ViewerPage: React.FC<ViewerPageProps> = ({ token, room }) => {
-  const [mounted, setMounted] = useState(false);
+  const serverUrl = process.env.LIVEKIT_URL!;
+  const token = sessionStorage.getItem('viewer_token');
+
+  const trackRefs = useTracks([
+    { source: Track.Source.Camera, withPlaceholder: true },
+    { source: Track.Source.Microphone, withPlaceholder: false },
+  ]);
 
   useEffect(() => {
-    setMounted(true);
+    console.log('Đang xem livestream...');
   }, []);
-
-  if (!mounted) return null;
 
   return (
     <LiveKitRoom
-      token={token}
-      serverUrl={process.env.VITE_LIVEKIT_URL}
+      token={token ?? ''}
+      serverUrl={serverUrl}
+      roomOptions={{ videoCaptureDefaults: { resolution: { width: 1280, height: 720 } } }}
       connect={true}
-      onDisconnected={() => console.log('🔌 Đã ngắt kết nối khỏi phòng')}
     >
-      <h2>🎥 Đang xem livestream...</h2>
-      <Tracks
-        stageTracks
-        sortTracks="publishTime"
-        render={({ trackRef }: { trackRef: TrackReferenceOrPlaceholder }) => (
-          <TrackTileRenderer trackRef={trackRef} />
-        )}
-      />
+      <div className="viewer-container">
+        {trackRefs.map((trackRef: TrackReference) => {
+          if (trackRef.publication?.track && !trackRef.publication.track.isLocal) {
+            return (
+              <VideoTrack
+                key={trackRef.publication.trackSid}
+                trackRef={trackRef}
+                isLocal={false}
+              />
+            );
+          }
+          return null;
+        })}
+      </div>
     </LiveKitRoom>
   );
 };
