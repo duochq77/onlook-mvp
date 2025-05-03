@@ -1,13 +1,8 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import Dotenv from 'dotenv-webpack';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
   entry: './src/main.tsx',
-  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
@@ -33,7 +28,6 @@ export default {
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
-    new Dotenv(),
   ],
   devServer: {
     static: path.join(__dirname, 'public'),
