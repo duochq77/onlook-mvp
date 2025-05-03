@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SellerPage from './pages/SellerPage';
 import ViewerPage from './pages/ViewerPage';
-import { getToken } from './services/api';
+import { fetchToken } from './services/api';
 
 const room = 'a';
 
@@ -11,8 +11,8 @@ function App() {
   const [viewerToken, setViewerToken] = useState<string | null>(null);
 
   useEffect(() => {
-    getToken({ room, identity: `seller-${room}`, role: 'publisher' }).then(setSellerToken);
-    getToken({ room, identity: `viewer-${room}`, role: 'subscriber' }).then(setViewerToken);
+    fetchToken({ room, identity: `seller-${room}`, role: 'publisher' }).then(setSellerToken);
+    fetchToken({ room, identity: `viewer-${room}`, role: 'subscriber' }).then(setViewerToken);
   }, []);
 
   return (

@@ -10,7 +10,7 @@ function SellerPage({ token, room }: SellerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.VITE_LIVEKIT_URL}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       connect
       video
       audio

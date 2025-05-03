@@ -1,10 +1,12 @@
 import React from 'react';
-import { ParticipantTile, TrackReferenceOrPlaceholder } from '@livekit/components-react';
+import { TrackReferenceOrPlaceholder, ParticipantTile } from '@livekit/components-react';
 
 interface Props {
   trackRef: TrackReferenceOrPlaceholder;
 }
 
-export const TrackTileRenderer = ({ trackRef }: Props) => {
+const TrackTileRenderer: React.FC<Props> = ({ trackRef }) => {
   return <ParticipantTile trackRef={trackRef} />;
 };
+
+export default TrackTileRenderer;
