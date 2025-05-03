@@ -4,6 +4,7 @@ import {
   useTracks,
   ParticipantTile,
   GridLayout,
+  TrackReference,
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 
@@ -25,7 +26,7 @@ function ViewerPage({ token, room }: ViewerPageProps) {
   return (
     <LiveKitRoom
       token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      serverUrl={process.env.VITE_LIVEKIT_URL}
       connect
       video
       audio
@@ -35,7 +36,7 @@ function ViewerPage({ token, room }: ViewerPageProps) {
     >
       <h2>👀 Đang xem phòng: {room}</h2>
       <GridLayout tracks={filteredTracks}>
-        {(trackRef) => <ParticipantTile trackRef={trackRef} />}
+        {(trackRef: TrackReference) => <ParticipantTile trackRef={trackRef} />}
       </GridLayout>
     </LiveKitRoom>
   );
