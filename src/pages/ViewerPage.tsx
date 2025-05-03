@@ -1,4 +1,3 @@
-// src/pages/ViewerPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react';
