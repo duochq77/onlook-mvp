@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-// ✅ Dùng require thay vì import để tránh lỗi trên Vercel
-const { AccessToken } = require('livekit-server-sdk')
-const { v4: uuidv4 } = require('uuid')
+// ✅ Dùng require để tránh lỗi "Cannot use import statement outside a module"
+const livekit = require('livekit-server-sdk')
+const uuid = require('uuid')
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { room, identity, role } = req.query
@@ -12,24 +12,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const apiKey = process.env.LIVEKIT_API_KEY!
-    const apiSecret = process.env.LIVEKIT_API_SECRET!
+    const apiKey = process.env.LIVEKIT_API_KEY
+    const apiSecret = process.env.LIVEKIT_API_SECRET
 
-    const token = new AccessToken(apiKey, apiSecret, {
-      identity: (identity as string) || uuidv4(),
+    if (!apiKey || !apiSecret) {
+      console.error('LIVEKIT_API_KEY or LIVEKIT_API_SECRET is missing')
+      return res.status(500).json({ error: 'Server config error' })
+    }
+
+    const token = new livekit.AccessToken(apiKey, apiSecret, {
+      identity: identity as string || uuid.v4(),
     })
 
     token.addGrant({
       roomJoin: true,
+      room: room as string,
       canPublish: role === 'publisher',
       canSubscribe: role === 'subscriber',
-      room: room as string,
     })
 
     const jwt = await token.toJwt()
-    return res.status(200).json({ token: jwt })
+    res.status(200).json({ token: jwt })
   } catch (err: any) {
     console.error('Token generation failed:', err)
-    return res.status(500).json({ error: 'Token generation failed' })
+    res.status(500).json({ error: 'Token generation failed' })
   }
 }
