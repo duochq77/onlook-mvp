@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@livekit/components-react": "2.9.3",
-    "@livekit/components-styles": "2.9.3",
-    "livekit-client": "1.15.13",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0"
+    "@livekit/components-stylesheet": "2.9.3",
+    "livekit-client": "2.11.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "6.23.0"
   },
   "devDependencies": {
     "css-loader": "^6.8.1",
