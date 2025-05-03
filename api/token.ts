@@ -1,7 +1,8 @@
-// api/token.ts
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { AccessToken } from 'livekit-server-sdk'
-import { v4 as uuidv4 } from 'uuid'
+
+// ✅ Dùng require thay vì import để tránh lỗi trên Vercel
+const { AccessToken } = require('livekit-server-sdk')
+const { v4: uuidv4 } = require('uuid')
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { room, identity, role } = req.query
@@ -28,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const jwt = await token.toJwt()
     return res.status(200).json({ token: jwt })
   } catch (err: any) {
-    console.error('Token error:', err)
+    console.error('Token generation failed:', err)
     return res.status(500).json({ error: 'Token generation failed' })
   }
 }
