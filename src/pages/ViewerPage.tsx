@@ -1,65 +1,31 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  LiveKitRoom,
-  VideoTrack,
-  useTracks,
-  TrackReference,
-} from '@livekit/components-react';
+// src/pages/ViewerPage.tsx
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react';
 import { Track } from 'livekit-client';
+import { getToken } from '../services/api';
 
 const ViewerPage: React.FC = () => {
-  const { room } = useParams();
-  const serverUrl = process.env.LIVEKIT_URL!;
-  const token = sessionStorage.getItem('viewer_token');
+  const location = useLocation();
+  const room = location.pathname.split('/').pop() || 'default-room';
+  const [token, setToken] = React.useState<string | null>(null);
 
-  const trackRefs = useTracks([
-    { source: Track.Source.Camera },
-    { source: Track.Source.Microphone },
-  ]);
+  React.useEffect(() => {
+    getToken(room, 'viewer', 'subscriber').then(setToken);
+  }, [room]);
 
-  useEffect(() => {
-    console.log('Đang xem livestream...');
-  }, []);
+  const tracks = useTracks([Track.Source.Camera]);
+
+  if (!token) return <div>🔓 Đang vào phòng xem livestream...</div>;
 
   return (
-    <LiveKitRoom
-      token={token ?? ''}
-      serverUrl={serverUrl}
-      connect={true}
-      video={false}
-      audio={false}
-    >
-      <div className="viewer-container">
-        {trackRefs.map((trackRef: TrackReference) => {
-          const track = trackRef.publication?.track;
-
-          if (track && !track.isLocal) {
-            if (track.kind === 'video') {
-              return (
-                <VideoTrack
-                  key={trackRef.publication.trackSid}
-                  trackRef={trackRef}
-                />
-              );
-            } else if (track.kind === 'audio') {
-              useEffect(() => {
-                const audioEl = track.attach();
-                audioEl.autoplay = true;
-                audioEl.controls = false;
-                audioEl.style.display = 'none';
-                document.body.appendChild(audioEl);
-
-                return () => {
-                  track.detach().forEach((el: HTMLMediaElement) => el.remove());
-                };
-              }, [track]);
-            }
-          }
-
-          return null;
-        })}
-      </div>
+    <LiveKitRoom token={token} serverUrl={process.env.LIVEKIT_URL} connect={true}>
+      <h2>👀 Đang xem livestream phòng: {room}</h2>
+      {tracks.map((trackRef) =>
+        trackRef.publication?.track ? (
+          <VideoTrack key={trackRef.publication.trackSid} trackRef={trackRef} />
+        ) : null
+      )}
     </LiveKitRoom>
   );
 };
