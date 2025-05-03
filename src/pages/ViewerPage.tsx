@@ -27,8 +27,8 @@ const ViewerPage: React.FC = () => {
       token={token ?? ''}
       serverUrl={serverUrl}
       connect={true}
-      video={false} // viewer không phát video
-      audio={false} // viewer không phát mic
+      video={false}
+      audio={false}
     >
       <div className="viewer-container">
         {trackRefs.map((trackRef: TrackReference) => {
@@ -51,7 +51,7 @@ const ViewerPage: React.FC = () => {
                 document.body.appendChild(audioEl);
 
                 return () => {
-                  track.detach().forEach((el) => el.remove());
+                  track.detach().forEach((el: HTMLMediaElement) => el.remove());
                 };
               }, [track]);
             }
