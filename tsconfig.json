@@ -1,19 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "lib": ["dom", "es2015"],
-    "allowJs": true,
-    "skipLibCheck": true,
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "jsx": "react",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "baseUrl": "./src",
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true
+    "jsx": "react-jsx",
+    "outDir": "./dist"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ]
 }

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "onlook-mvp",
   "version": "1.0.0",
   "description": "Onlook Livestream Platform MVP",
