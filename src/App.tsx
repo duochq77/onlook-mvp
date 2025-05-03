@@ -1,25 +1,19 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import SellerPage from './pages/SellerPage'
-import ViewerPage from './pages/ViewerPage'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import SellerPage from './pages/SellerPage';
+import ViewerPage from './pages/ViewerPage';
+import { getToken } from './services/api'; // 🔗 gọi API token từ file riêng
+
+const room = 'a';
 
 function App() {
-  const [sellerToken, setSellerToken] = useState<string | null>(null)
-  const [viewerToken, setViewerToken] = useState<string | null>(null)
-  const room = 'a'
-  const apiBase = '/api/token' // 🟢 Gọi nội bộ đúng Vercel chuẩn
+  const [sellerToken, setSellerToken] = useState<string | null>(null);
+  const [viewerToken, setViewerToken] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${apiBase}?room=${room}&identity=seller-${room}&role=publisher`)
-      .then((res) => res.json())
-      .then((data) => setSellerToken(data.token))
-      .catch((err) => console.error('❌ Lỗi lấy token seller:', err))
-
-    fetch(`${apiBase}?room=${room}&identity=viewer-${room}&role=subscriber`)
-      .then((res) => res.json())
-      .then((data) => setViewerToken(data.token))
-      .catch((err) => console.error('❌ Lỗi lấy token viewer:', err))
-  }, [])
+    getToken({ room, identity: `seller-${room}`, role: 'publisher' }).then(setSellerToken);
+    getToken({ room, identity: `viewer-${room}`, role: 'subscriber' }).then(setViewerToken);
+  }, []);
 
   return (
     <Router>
@@ -47,7 +41,7 @@ function App() {
         />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
