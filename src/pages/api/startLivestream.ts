@@ -13,9 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing room or identity' });
   }
 
-  console.log(`📡 Livestream started for room "${room}" by "${identity}"`);
+  console.log(`🎬 Livestream started for room: ${room}, by: ${identity}`);
 
-  // Ở đây bạn có thể thêm logic tạo phiên livestream vào database nếu cần
-
-  return res.status(200).json({ message: 'Livestream started successfully' });
+  res.status(200).json({ message: 'Livestream started successfully' });
 }
