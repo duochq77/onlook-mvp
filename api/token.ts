@@ -27,7 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const token = await at.toJwt();
     res.status(200).json({ token });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    // Định nghĩa kiểu cho error
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Unknown error occurred' });
+    }
   }
 }
