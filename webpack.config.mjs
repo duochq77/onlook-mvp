@@ -1,13 +1,19 @@
+// webpack.config.mjs
+
 import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { fileURLToPath } from 'url';
+
+// Giả lập __dirname trong ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default {
   entry: './src/main.tsx',
   output: {
-    path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
-    publicPath: '/',
+    path: path.resolve(__dirname, 'public'),
   },
+  mode: 'development',
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
@@ -15,23 +21,16 @@ export default {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
+        use: 'ts-loader',
         exclude: /node_modules/,
-      },
-      {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-    }),
-  ],
   devServer: {
-    static: path.join(__dirname, 'public'),
-    historyApiFallback: true,
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
     port: 8080,
   },
 };
