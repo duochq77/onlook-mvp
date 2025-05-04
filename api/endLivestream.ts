@@ -17,8 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log(`Room: ${room}`);
     console.log(`Seller ID: ${sellerId}`);
 
-    // Sau này có thể cập nhật trạng thái livestream đã kết thúc trong DB
-
     return res.status(200).json({
       message: 'Livestream ended successfully',
       room,

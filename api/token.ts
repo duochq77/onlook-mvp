@@ -1,44 +1,30 @@
-// api/token.ts
+// api/startLivestream.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AccessToken } from 'livekit-server-sdk';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
-    const { room, identity, role } = req.query;
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+  }
 
-    if (!room || !identity || !role) {
-      return res.status(400).json({ error: 'Missing room, identity, or role' });
+  try {
+    const { room, sellerId } = req.body;
+
+    if (!room || !sellerId) {
+      return res.status(400).json({ error: 'Missing required fields: room and sellerId' });
     }
 
-    const apiKey = process.env.LIVEKIT_API_KEY;
-    const apiSecret = process.env.LIVEKIT_API_SECRET;
-    const roomName = Array.isArray(room) ? room[0] : room;
-    const userIdentity = Array.isArray(identity) ? identity[0] : identity;
-    const userRole = Array.isArray(role) ? role[0] : role;
+    console.log('[START] Livestream');
+    console.log(`Room: ${room}`);
+    console.log(`Seller ID: ${sellerId}`);
 
-    if (!apiKey || !apiSecret) {
-      return res.status(500).json({ error: 'Missing LiveKit API credentials' });
-    }
-
-    try {
-      const at = new AccessToken(apiKey, apiSecret, {
-        identity: userIdentity,
-      });
-
-      at.addGrant({
-        room: roomName,
-        roomJoin: true,
-        canPublish: userRole === 'publisher',
-        canSubscribe: true,
-      });
-
-      const token = at.toJwt();
-      return res.status(200).json({ token });
-    } catch (err) {
-      console.error('Token generation error:', err);
-      return res.status(500).json({ error: 'Failed to generate token' });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    return res.status(200).json({
+      message: 'Livestream started successfully',
+      room,
+      sellerId,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('Error in startLivestream:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
