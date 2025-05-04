@@ -1,54 +1,50 @@
 // src/pages/SellerPage.tsx
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { LiveKitRoom } from '@livekit/components-react';
-import '@livekit/components-styles';
-import { Track } from 'livekit-client';
-import VideoUploadRelay from '../components/VideoUploadRelay';
+
+import React from 'react';
 
 const SellerPage: React.FC = () => {
-  const { room } = useParams<{ room: string }>();
-  const [token, setToken] = useState<string | null>(null);
-  const [isRelay, setIsRelay] = useState(false);
-  const identity = `seller-${room}`;
-  const serverUrl = process.env.VITE_LIVEKIT_URL || '';
+  const startLivestream = async () => {
+    const res = await fetch('/api/startLivestream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        room: 'a',           // có thể dùng tên khác
+        identity: 'seller-a' // định danh người bán
+      }),
+    });
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const res = await fetch(`/api/token?room=${room}&identity=${identity}&role=publisher`);
-        const data = await res.json();
-        setToken(data.token);
-      } catch (error) {
-        console.error('Failed to fetch token', error);
-      }
-    };
-    fetchToken();
-  }, [room]);
-
-  const handleVideoSelected = (file: File) => {
-    // Xử lý video đã chọn ở đây
-    console.log('Video đã chọn:', file);
+    const data = await res.json();
+    console.log('Start Livestream Response:', data);
+    alert('🟢 Đã bắt đầu livestream!');
   };
 
-  if (!token) return <div>Đang lấy token phát video...</div>;
+  const endLivestream = async () => {
+    const res = await fetch('/api/endLivestream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: 'a' }),
+    });
+
+    const data = await res.json();
+    console.log('End Livestream Response:', data);
+    alert('🔴 Đã kết thúc livestream!');
+  };
 
   return (
-    <div style={{ height: '100vh' }}>
-      {!isRelay ? (
-        <LiveKitRoom
-          token={token}
-          serverUrl={serverUrl}
-          connect={true}
-          video={true}
-          audio={true}
-          onConnected={() => console.log('Connected to room')}
-        >
-          <button onClick={() => setIsRelay(true)}>Chuyển sang phát lại video</button>
-        </LiveKitRoom>
-      ) : (
-        <VideoUploadRelay onVideoSelected={handleVideoSelected} />
-      )}
+    <div style={{ padding: 20 }}>
+      <h1>Trang người bán – Livestream</h1>
+      <button
+        onClick={startLivestream}
+        style={{ marginRight: 10, padding: '10px 20px' }}
+      >
+        ▶️ Bắt đầu Livestream
+      </button>
+      <button
+        onClick={endLivestream}
+        style={{ padding: '10px 20px' }}
+      >
+        ⏹️ Kết thúc Livestream
+      </button>
     </div>
   );
 };
