@@ -1,25 +1,22 @@
-const { AccessToken } = require('livekit-server-sdk');
+// generateToken.ts
+import { AccessToken } from 'livekit-server-sdk';
 
-const apiKey = process.env.LIVEKIT_API_KEY;
-const apiSecret = process.env.LIVEKIT_API_SECRET;
+const apiKey = process.env.LIVEKIT_API_KEY!;
+const apiSecret = process.env.LIVEKIT_API_SECRET!;
+const livekitHost = process.env.LIVEKIT_HOST!;  // Bạn cần dùng biến này ở đâu đó nếu cần
 
-module.exports = async function generateToken(room, identity, role) {
-  if (!room || !identity || !role) {
-    throw new Error('Missing room, identity, or role');
-  }
-
-  const token = new AccessToken(apiKey, apiSecret, {
+export default function generateToken(room: string, identity: string, role: string) {
+  const at = new AccessToken(apiKey, apiSecret, {
     identity: identity,
-    ttl: 60 * 60, // Thời gian sống của token (1 giờ)
+    ttl: 60 * 60,
   });
 
-  token.addGrant({
+  at.addGrant({
     room: room,
     roomJoin: true,
     canPublish: role === 'publisher',
     canSubscribe: true,
   });
 
-  const jwt = await token.toJwt();
-  return jwt;
-};
+  return { token: at.toJwt(), livekitHost };  // Trả về livekitHost nếu cần
+}
