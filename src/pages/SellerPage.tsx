@@ -1,3 +1,4 @@
+// src/pages/SellerPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { LiveKitRoom } from '@livekit/components-react';
@@ -25,6 +26,11 @@ const SellerPage: React.FC = () => {
     fetchToken();
   }, [room]);
 
+  const handleVideoSelected = (file: File) => {
+    // Xử lý video đã chọn ở đây
+    console.log('Video đã chọn:', file);
+  };
+
   if (!token) return <div>Đang lấy token phát video...</div>;
 
   return (
@@ -41,7 +47,7 @@ const SellerPage: React.FC = () => {
           <button onClick={() => setIsRelay(true)}>Chuyển sang phát lại video</button>
         </LiveKitRoom>
       ) : (
-        <VideoUploadRelay roomName={room!} identity={identity} token={token} serverUrl={serverUrl} />
+        <VideoUploadRelay onVideoSelected={handleVideoSelected} />
       )}
     </div>
   );

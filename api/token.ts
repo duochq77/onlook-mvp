@@ -1,38 +1,26 @@
+// api/token.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AccessToken } from 'livekit-server-sdk';
-
-const apiKey = process.env.LIVEKIT_API_KEY!;
-const apiSecret = process.env.LIVEKIT_API_SECRET!;
-const livekitHost = process.env.LIVEKIT_HOST!;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { room, identity, role } = req.query;
+  if (req.method === 'GET') {
+    const { room, identity, role } = req.query;
 
-  if (!room || !identity || !role) {
-    return res.status(400).json({ error: 'Missing room, identity, or role' });
-  }
-
-  try {
-    const at = new AccessToken(apiKey, apiSecret, {
-      identity: identity as string,
-      ttl: 60 * 60,
-    });
-
-    at.addGrant({
-      room: room as string,
-      roomJoin: true,
-      canPublish: role === 'publisher',
-      canSubscribe: true,
-    });
-
-    const token = await at.toJwt();
-    res.status(200).json({ token });
-  } catch (error: unknown) {
-    // Định nghĩa kiểu cho error
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Unknown error occurred' });
+    // Kiểm tra các tham số
+    if (!room || !identity || !role) {
+      return res.status(400).json({ error: 'Missing room, identity, or role' });
     }
+
+    // Logic để tạo token (ví dụ: sử dụng LiveKit hoặc một công cụ tạo token)
+    const token = generateToken(room, identity, role); // Giả sử bạn có hàm generateToken
+
+    // Trả về token
+    res.status(200).json({ token });
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
   }
+}
+
+function generateToken(room: string | string[], identity: string | string[], role: string | string[]) {
+  // Giả sử đây là logic tạo token
+  return 'sampleToken';
 }

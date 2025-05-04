@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+// src/components/VideoUploadRelay.tsx
+import React, { useRef, useState } from 'react';
 
 interface Props {
   onVideoSelected: (file: File) => void;
@@ -6,11 +7,18 @@ interface Props {
 
 const VideoUploadRelay: React.FC<Props> = ({ onVideoSelected }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onVideoSelected(file);
+      // Kiểm tra loại file video
+      if (!file.type.startsWith('video/')) {
+        setError('Vui lòng chọn một video hợp lệ');
+        return;
+      }
+      setError(null);
+      onVideoSelected(file); // Gọi hàm từ component cha để xử lý file
     }
   };
 
@@ -33,6 +41,7 @@ const VideoUploadRelay: React.FC<Props> = ({ onVideoSelected }) => {
         className="hidden"
         onChange={handleFileChange}
       />
+      {error && <div className="text-red-500 mt-2">{error}</div>}
     </div>
   );
 };
