@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import generateToken from './generateToken';  // Import hàm generateToken
+import generateToken from './generateToken.d';  // Import hàm generateToken
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

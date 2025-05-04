@@ -1,6 +1,6 @@
 // api/token.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import generateToken from './generateToken';
+import generateToken from './generateToken.d';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { room, identity, role } = req.query;
