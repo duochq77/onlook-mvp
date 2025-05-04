@@ -11,7 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing room or sellerId' });
   }
 
-  // Giả định clear trạng thái livestream
   console.log(`[END] Livestream room: ${room} has ended by seller: ${sellerId}`);
 
   return res.status(200).json({ message: 'Livestream ended', room });
