@@ -3,7 +3,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Giả lập __dirname trong ESM
+// Giả lập __dirname cho ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -13,8 +13,11 @@ export default {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
   },
-  mode: 'development',
+  mode: 'production',
   resolve: {
+    fallback: {
+      crypto: false
+    },
     extensions: ['.tsx', '.ts', '.js'],
   },
   module: {
