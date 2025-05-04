@@ -1,12 +1,15 @@
-export function isUserAuthenticated(): boolean {
-  // Giả lập xác thực – sau này tích hợp thật
-  return Boolean(localStorage.getItem('user_token'));
-}
+// src/utils/authUtils.ts
 
-export function setUserToken(token: string): void {
-  localStorage.setItem('user_token', token);
-}
+import { createClient } from '@supabase/supabase-js';
 
-export function clearUserToken(): void {
-  localStorage.removeItem('user_token');
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Hàm đăng nhập
+export const signIn = async (email: string, password: string) => {
+  const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+};
