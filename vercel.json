@@ -1,8 +1,4 @@
 {
-  "build": {
-    "src": "src",
-    "use": "@vercel/node"
-  },
   "routes": [
     {
       "src": "/api/(.*)",
