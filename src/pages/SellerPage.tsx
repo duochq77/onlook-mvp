@@ -1,5 +1,3 @@
-// src/pages/SellerPage.tsx
-
 import React, { useRef } from 'react';
 import { Room, createLocalVideoTrack } from 'livekit-client';
 
@@ -18,7 +16,7 @@ const SellerPage: React.FC = () => {
       const data = await res.json();
       console.log('✅ Start Livestream Response:', data);
 
-      // Gọi token từ API
+      // Gọi token từ API bằng GET
       const tokenRes = await fetch('/api/token?room=a&identity=seller-a&role=publisher');
       const tokenData = await tokenRes.json();
 
