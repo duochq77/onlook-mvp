@@ -1,32 +1,33 @@
-import eslintPluginReact from 'eslint-plugin-react';
-import eslintPluginImport from 'eslint-plugin-import';
-import eslintPluginJsxA11y from 'eslint-plugin-jsx-a11y';
+# .gitignore
 
-export default [
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['node_modules', 'dist'],
-    languageOptions: {
-      parser: '@typescript-eslint/parser',
-      parserOptions: {
-        project: './tsconfig.json',
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-    plugins: {
-      react: eslintPluginReact,
-      import: eslintPluginImport,
-      jsxA11y: eslintPluginJsxA11y,
-    },
-    rules: {
-      'react/jsx-uses-react': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'import/order': ['warn', { 'alphabetize': { order: 'asc' } }],
-      'jsx-a11y/alt-text': 'warn',
-      'no-unused-vars': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn'],
-    },
-  },
-];
+# Node modules
+node_modules/
+
+# Build output
+.next/
+out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+
+# TypeScript cache
+*.tsbuildinfo

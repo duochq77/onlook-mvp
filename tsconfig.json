@@ -7,10 +7,28 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "jsx": "react-jsx",
-    "outDir": "./dist"
+    "jsx": "preserve",
+    "outDir": "./dist",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "pages",
+    "api/token.ts",
+    "api/startLivestream.ts",
+    "api/endLivestream.ts",
+    "api"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
