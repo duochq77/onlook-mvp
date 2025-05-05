@@ -1,3 +1,5 @@
+// src/pages/ViewerPage.tsx
+
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Room,
@@ -17,32 +19,27 @@ const ViewerPage: React.FC = () => {
       const roomName = 'a';
 
       try {
-        const tokenRes = await fetch(
-          `/api/token?room=${roomName}&identity=${identity}&role=subscriber`
-        );
-
+        // ✅ Dùng GET thay vì POST
+        const tokenRes = await fetch(`/api/token?room=${roomName}&identity=${identity}&role=subscriber`);
         const tokenData = await tokenRes.json();
 
         if (!tokenData.token) {
-          console.error('❌ Không lấy được token');
+          alert('❌ Không lấy được token');
           return;
         }
 
         const room = new Room();
 
-        room.on(
-          'trackSubscribed',
-          (track: RemoteTrack, pub, participant: RemoteParticipant) => {
-            if (track.kind === 'video') {
-              const videoTrack = track as RemoteVideoTrack;
-              const element = videoRef.current;
-              if (element) {
-                videoTrack.attach(element);
-                console.log('📺 Viewer đã nhận video từ seller');
-              }
+        room.on('trackSubscribed', (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+          if (track.kind === 'video') {
+            const videoTrack = track as RemoteVideoTrack;
+            const element = videoRef.current;
+            if (element) {
+              videoTrack.attach(element);
+              console.log('📺 Viewer đã nhận video từ seller');
             }
           }
-        );
+        });
 
         await room.connect(url, tokenData.token);
         console.log('🟢 Viewer đã kết nối tới phòng:', roomName);
