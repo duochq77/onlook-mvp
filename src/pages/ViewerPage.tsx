@@ -12,36 +12,41 @@ const ViewerPage: React.FC = () => {
 
   useEffect(() => {
     const connectToRoom = async () => {
-      const roomName = 'a';
-      const identity = 'viewer-' + Math.floor(Math.random() * 1000);
       const url = 'wss://onlook-dev-zvm78p9y.livekit.cloud';
+      const identity = 'viewer-' + Math.floor(Math.random() * 1000);
+      const roomName = 'a';
 
       try {
-        // ✅ Gọi GET token đơn giản, chuẩn
-        const res = await fetch(`/api/token?room=${roomName}&identity=${identity}&role=subscriber`);
-        const data = await res.json();
+        const tokenRes = await fetch(
+          `/api/token?room=${roomName}&identity=${identity}&role=subscriber`
+        );
 
-        if (!data.token) {
-          console.error('❌ Không nhận được token');
+        const tokenData = await tokenRes.json();
+
+        if (!tokenData.token) {
+          console.error('❌ Không lấy được token');
           return;
         }
 
         const room = new Room();
-        setRoom(room);
 
-        room.on('trackSubscribed', (track: RemoteTrack, _, participant: RemoteParticipant) => {
-          if (track.kind === 'video') {
-            const videoTrack = track as RemoteVideoTrack;
-            const element = videoRef.current;
-            if (element) {
-              videoTrack.attach(element);
-              console.log('📺 Video đã được gắn vào viewer');
+        room.on(
+          'trackSubscribed',
+          (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+            if (track.kind === 'video') {
+              const videoTrack = track as RemoteVideoTrack;
+              const element = videoRef.current;
+              if (element) {
+                videoTrack.attach(element);
+                console.log('📺 Viewer đã nhận video từ seller');
+              }
             }
           }
-        });
+        );
 
-        await room.connect(url, data.token);
-        console.log('🟢 Viewer đã kết nối');
+        await room.connect(url, tokenData.token);
+        console.log('🟢 Viewer đã kết nối tới phòng:', roomName);
+        setRoom(room);
       } catch (err) {
         console.error('❌ Viewer lỗi khi kết nối:', err);
       }
@@ -56,7 +61,7 @@ const ViewerPage: React.FC = () => {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Giao diện người xem</h1>
+      <h1>Giao diện người xem – Phòng: a</h1>
       <video
         ref={videoRef}
         autoPlay
