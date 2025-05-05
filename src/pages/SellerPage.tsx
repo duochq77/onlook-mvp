@@ -1,54 +1,100 @@
-import React, { useEffect, useState } from 'react';
-import { connect, Room, createLocalVideoTrack } from 'livekit-client';
+// src/pages/SellerPage.tsx
+
+import React, { useRef } from 'react';
+import { Room, createLocalVideoTrack } from 'livekit-client';
 
 const SellerPage: React.FC = () => {
-  const [room, setRoom] = useState<Room | null>(null);
+  const roomRef = useRef<Room | null>(null);
 
   const startLivestream = async () => {
-    const res = await fetch('/api/startLivestream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room: 'a', identity: 'seller-a' }),
-    });
+    try {
+      // Gọi API backend để xác nhận bắt đầu
+      const res = await fetch('/api/startLivestream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room: 'a', identity: 'seller-a' }),
+      });
 
-    const data = await res.json();
-    console.log('Start Livestream Response:', data);
+      const data = await res.json();
+      console.log('✅ Start Livestream Response:', data);
 
-    // 🔑 Lấy token để phát video
-    const tokenRes = await fetch(`/api/token?room=a&identity=seller-a&role=publisher`);
-    const { token } = await tokenRes.json();
+      // Gọi token từ API
+      const tokenRes = await fetch('/api/token?room=a&identity=seller-a&role=publisher');
+      const tokenData = await tokenRes.json();
 
-    const room = await connect(process.env.LIVEKIT_HOST!, token);
-    setRoom(room);
+      if (!tokenData.token) {
+        alert('❌ Không lấy được token');
+        return;
+      }
 
-    const videoTrack = await createLocalVideoTrack();
-    room.localParticipant.publishTrack(videoTrack);
+      // Kết nối tới LiveKit
+      const room = new Room();
+      roomRef.current = room;
 
-    const videoElement = document.getElementById('local-video') as HTMLVideoElement;
-    videoTrack.attach(videoElement);
+      await room.connect('wss://onlook-dev-zvm78p9y.livekit.cloud', tokenData.token);
+      console.log('✅ Đã kết nối tới phòng!');
 
-    alert('🟢 Đã bắt đầu phát video!');
+      // Bắt video từ webcam
+      const videoTrack = await createLocalVideoTrack();
+      room.localParticipant.publishTrack(videoTrack);
+
+      const videoElement = document.getElementById('local-video') as HTMLVideoElement;
+      videoTrack.attach(videoElement);
+    } catch (error) {
+      console.error('❌ Lỗi khi bắt đầu livestream:', error);
+      alert('❌ Lỗi khi bắt đầu livestream');
+    }
   };
 
   const endLivestream = async () => {
-    await fetch('/api/endLivestream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room: 'a' }),
-    });
+    try {
+      const res = await fetch('/api/endLivestream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room: 'a' }),
+      });
 
-    room?.disconnect();
-    setRoom(null);
-    alert('🔴 Đã kết thúc livestream!');
+      const data = await res.json();
+      console.log('✅ End Livestream Response:', data);
+
+      if (roomRef.current) {
+        roomRef.current.disconnect();
+        roomRef.current = null;
+      }
+
+      alert('🔴 Đã kết thúc livestream!');
+    } catch (error) {
+      console.error('❌ Lỗi khi kết thúc livestream:', error);
+    }
   };
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Trang người bán – Livestream</h1>
-      <video id="local-video" autoPlay muted playsInline width="480" height="360" />
-      <br />
-      <button onClick={startLivestream} style={{ marginRight: 10 }}>▶️ Bắt đầu Livestream</button>
-      <button onClick={endLivestream}>⏹️ Kết thúc Livestream</button>
+
+      <video
+        id="local-video"
+        autoPlay
+        muted
+        playsInline
+        style={{ width: '100%', maxWidth: 600, border: '1px solid #ccc', borderRadius: 8 }}
+      ></video>
+
+      <div style={{ marginTop: 20 }}>
+        <button
+          onClick={startLivestream}
+          style={{ marginRight: 10, padding: '10px 20px' }}
+        >
+          ▶️ Bắt đầu Livestream
+        </button>
+
+        <button
+          onClick={endLivestream}
+          style={{ padding: '10px 20px' }}
+        >
+          ⏹️ Kết thúc Livestream
+        </button>
+      </div>
     </div>
   );
 };
