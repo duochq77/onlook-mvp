@@ -1,64 +1,54 @@
-// src/pages/SellerPage.tsx
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect, Room, createLocalVideoTrack } from 'livekit-client';
 
 const SellerPage: React.FC = () => {
+  const [room, setRoom] = useState<Room | null>(null);
+
   const startLivestream = async () => {
-    try {
-      const res = await fetch('/api/startLivestream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          room: 'a',
-          identity: 'seller-a',
-        }),
-      });
+    const res = await fetch('/api/startLivestream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: 'a', identity: 'seller-a' }),
+    });
 
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Lỗi ${res.status}: ${errText}`);
-      }
+    const data = await res.json();
+    console.log('Start Livestream Response:', data);
 
-      const data = await res.json();
-      console.log('Start Livestream Response:', data);
-      alert('🟢 Đã bắt đầu livestream!');
-    } catch (error) {
-      console.error('❌ Lỗi khi bắt đầu livestream:', error);
-      alert('❌ Không thể bắt đầu livestream: ' + error);
-    }
+    // 🔑 Lấy token để phát video
+    const tokenRes = await fetch(`/api/token?room=a&identity=seller-a&role=publisher`);
+    const { token } = await tokenRes.json();
+
+    const room = await connect(process.env.LIVEKIT_HOST!, token);
+    setRoom(room);
+
+    const videoTrack = await createLocalVideoTrack();
+    room.localParticipant.publishTrack(videoTrack);
+
+    const videoElement = document.getElementById('local-video') as HTMLVideoElement;
+    videoTrack.attach(videoElement);
+
+    alert('🟢 Đã bắt đầu phát video!');
   };
 
   const endLivestream = async () => {
-    try {
-      const res = await fetch('/api/endLivestream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room: 'a' }),
-      });
+    await fetch('/api/endLivestream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: 'a' }),
+    });
 
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Lỗi ${res.status}: ${errText}`);
-      }
-
-      const data = await res.json();
-      console.log('End Livestream Response:', data);
-      alert('🔴 Đã kết thúc livestream!');
-    } catch (error) {
-      console.error('❌ Lỗi khi kết thúc livestream:', error);
-      alert('❌ Không thể kết thúc livestream: ' + error);
-    }
+    room?.disconnect();
+    setRoom(null);
+    alert('🔴 Đã kết thúc livestream!');
   };
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Trang người bán – Livestream</h1>
-      <button onClick={startLivestream} style={{ marginRight: 10, padding: '10px 20px' }}>
-        ▶️ Bắt đầu Livestream
-      </button>
-      <button onClick={endLivestream} style={{ padding: '10px 20px' }}>
-        ⏹️ Kết thúc Livestream
-      </button>
+      <video id="local-video" autoPlay muted playsInline width="480" height="360" />
+      <br />
+      <button onClick={startLivestream} style={{ marginRight: 10 }}>▶️ Bắt đầu Livestream</button>
+      <button onClick={endLivestream}>⏹️ Kết thúc Livestream</button>
     </div>
   );
 };
