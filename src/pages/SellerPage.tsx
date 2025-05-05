@@ -6,7 +6,6 @@ const SellerPage: React.FC = () => {
 
   const startLivestream = async () => {
     try {
-      // Gọi API backend để xác nhận bắt đầu
       const res = await fetch('/api/startLivestream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -16,8 +15,9 @@ const SellerPage: React.FC = () => {
       const data = await res.json();
       console.log('✅ Start Livestream Response:', data);
 
-      // Gọi token từ API bằng GET
-      const tokenRes = await fetch('/api/token?room=a&identity=seller-a&role=publisher');
+      const tokenRes = await fetch(
+        '/api/token?room=a&identity=seller-a&role=publisher'
+      );
       const tokenData = await tokenRes.json();
 
       if (!tokenData.token) {
@@ -25,14 +25,15 @@ const SellerPage: React.FC = () => {
         return;
       }
 
-      // Kết nối tới LiveKit
       const room = new Room();
       roomRef.current = room;
 
-      await room.connect('wss://onlook-dev-zvm78p9y.livekit.cloud', tokenData.token);
+      await room.connect(
+        'wss://onlook-dev-zvm78p9y.livekit.cloud',
+        tokenData.token
+      );
       console.log('✅ Đã kết nối tới phòng!');
 
-      // Bắt video từ webcam
       const videoTrack = await createLocalVideoTrack();
       room.localParticipant.publishTrack(videoTrack);
 
@@ -75,7 +76,12 @@ const SellerPage: React.FC = () => {
         autoPlay
         muted
         playsInline
-        style={{ width: '100%', maxWidth: 600, border: '1px solid #ccc', borderRadius: 8 }}
+        style={{
+          width: '100%',
+          maxWidth: 600,
+          border: '1px solid #ccc',
+          borderRadius: 8,
+        }}
       ></video>
 
       <div style={{ marginTop: 20 }}>
@@ -86,10 +92,7 @@ const SellerPage: React.FC = () => {
           ▶️ Bắt đầu Livestream
         </button>
 
-        <button
-          onClick={endLivestream}
-          style={{ padding: '10px 20px' }}
-        >
+        <button onClick={endLivestream} style={{ padding: '10px 20px' }}>
           ⏹️ Kết thúc Livestream
         </button>
       </div>
