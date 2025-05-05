@@ -20,16 +20,7 @@ const ViewerPage: React.FC = () => {
       const roomName = 'a';
 
       try {
-        const tokenRes = await fetch('/api/token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            room: roomName,
-            identity,
-            role: 'subscriber',
-          }),
-        });
-
+        const tokenRes = await fetch(`/api/token?room=${roomName}&identity=${identity}&role=subscriber`);
         const { token } = await tokenRes.json();
         console.log('[Viewer] Nhận token:', token);
 
