@@ -12,35 +12,36 @@ const ViewerPage: React.FC = () => {
 
   useEffect(() => {
     const connectToRoom = async () => {
-      const url =
-        process.env.VITE_LIVEKIT_URL || 'wss://onlook-dev-zvm78p9y.livekit.cloud';
-      const identity = 'viewer-' + Math.floor(Math.random() * 1000);
       const roomName = 'a';
+      const identity = 'viewer-' + Math.floor(Math.random() * 1000);
+      const url = 'wss://onlook-dev-zvm78p9y.livekit.cloud';
 
       try {
-        // ⚠️ Dùng GET đúng cách
-        const tokenRes = await fetch(
-          `/api/token?room=${roomName}&identity=${identity}&role=subscriber`
-        );
-        const { token } = await tokenRes.json();
-        console.log('[Viewer] Nhận token:', token);
+        // ✅ Gọi GET token đơn giản, chuẩn
+        const res = await fetch(`/api/token?room=${roomName}&identity=${identity}&role=subscriber`);
+        const data = await res.json();
+
+        if (!data.token) {
+          console.error('❌ Không nhận được token');
+          return;
+        }
 
         const room = new Room();
+        setRoom(room);
 
-        room.on('trackSubscribed', (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+        room.on('trackSubscribed', (track: RemoteTrack, _, participant: RemoteParticipant) => {
           if (track.kind === 'video') {
             const videoTrack = track as RemoteVideoTrack;
             const element = videoRef.current;
             if (element) {
               videoTrack.attach(element);
-              console.log('📺 Viewer đã nhận video từ seller');
+              console.log('📺 Video đã được gắn vào viewer');
             }
           }
         });
 
-        await room.connect(url, token);
-        console.log('🟢 Viewer đã kết nối tới phòng:', roomName);
-        setRoom(room);
+        await room.connect(url, data.token);
+        console.log('🟢 Viewer đã kết nối');
       } catch (err) {
         console.error('❌ Viewer lỗi khi kết nối:', err);
       }
@@ -55,7 +56,7 @@ const ViewerPage: React.FC = () => {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Giao diện người xem – Phòng: a</h1>
+      <h1>Giao diện người xem</h1>
       <video
         ref={videoRef}
         autoPlay

@@ -20,18 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   });
 
   if (role === 'publisher') {
-    at.addGrant({
-      roomJoin: true,
-      room: room as string,
-      canPublish: true,
-      canSubscribe: true,
-    });
+    at.addGrant({ roomJoin: true, room: room as string, canPublish: true, canSubscribe: true });
   } else if (role === 'subscriber') {
-    at.addGrant({
-      roomJoin: true,
-      room: room as string,
-      canSubscribe: true,
-    });
+    at.addGrant({ roomJoin: true, room: room as string, canSubscribe: true });
   } else {
     return res.status(400).json({ error: 'Invalid role' });
   }
