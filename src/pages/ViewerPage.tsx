@@ -1,5 +1,3 @@
-// src/pages/ViewerPage.tsx
-
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Room,
@@ -20,10 +18,10 @@ const ViewerPage: React.FC = () => {
       const roomName = 'a';
 
       try {
+        // ⚠️ Dùng GET đúng cách
         const tokenRes = await fetch(
           `/api/token?room=${roomName}&identity=${identity}&role=subscriber`
         );
-
         const { token } = await tokenRes.json();
         console.log('[Viewer] Nhận token:', token);
 
