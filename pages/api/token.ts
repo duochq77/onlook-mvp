@@ -1,4 +1,3 @@
-// File: pages/api/token.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { AccessToken } from 'livekit-server-sdk';
 

@@ -1,11 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "next.config.js",
-      "use": "@vercel/next"
-    }
-  ],
   "env": {
     "LIVEKIT_API_KEY": "APILXA75pngcAFT",
     "LIVEKIT_API_SECRET": "pJecuBclk2mPiWFVu8JFI6vk2ZEcRr1bUplZI67ZHSJ",

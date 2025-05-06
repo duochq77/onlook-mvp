@@ -1,33 +1,32 @@
-# .gitignore
-
-# Node modules
-node_modules/
-
-# Build output
-.next/
-out/
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# OS-specific
-.DS_Store
-Thumbs.db
-
-# Env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDEs and editors
-.vscode/
-.idea/
-*.swp
-
-# TypeScript cache
-*.tsbuildinfo
+module.exports = {
+    extends: [
+      'eslint:recommended',
+      'plugin:@typescript-eslint/recommended',
+      'plugin:react/recommended',
+      'plugin:react-hooks/recommended',
+    ],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+    plugins: ['react', '@typescript-eslint'],
+    rules: {
+      // Node modules
+      'no-console': 'warn',
+      'react/prop-types': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-uses-react': 'off',
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  };
+  
