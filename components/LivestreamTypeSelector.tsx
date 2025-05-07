@@ -1,28 +1,37 @@
-// File: components/LivestreamTypeSelector.tsx
 import React from 'react';
 
-interface LivestreamTypeSelectorProps {
-  onSelect: (type: 'direct' | 'upload') => void;
+export type LivestreamType = 'direct' | 'hybrid-audio' | 'full-file';
+
+interface Props {
+  selectedType: LivestreamType;
+  onSelect: (type: LivestreamType) => void;
 }
 
-const LivestreamTypeSelector: React.FC<LivestreamTypeSelectorProps> = ({ onSelect }) => {
+const LivestreamTypeSelector: React.FC<Props> = ({ selectedType, onSelect }) => {
   return (
-    <div className="flex flex-col items-center space-y-4 mt-10">
-      <h2 className="text-xl font-semibold">Chọn hình thức livestream:</h2>
-      <div className="space-x-4">
-        <button
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-          onClick={() => onSelect('direct')}
-        >
-          Phát trực tiếp
-        </button>
-        <button
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-          onClick={() => onSelect('upload')}
-        >
-          Phát lại video có sẵn
-        </button>
-      </div>
+    <div className="flex flex-col gap-2 p-4">
+      <h2 className="text-xl font-semibold mb-2">Chọn hình thức livestream:</h2>
+      <button
+        onClick={() => onSelect('direct')}
+        className={`p-2 border rounded-xl ${selectedType === 'direct' ? 'bg-blue-500 text-white' : 'bg-white'
+          }`}
+      >
+        1. Phát trực tiếp cả âm thanh và video
+      </button>
+      <button
+        onClick={() => onSelect('hybrid-audio')}
+        className={`p-2 border rounded-xl ${selectedType === 'hybrid-audio' ? 'bg-blue-500 text-white' : 'bg-white'
+          }`}
+      >
+        2. Phát video trực tiếp + Âm thanh từ file
+      </button>
+      <button
+        onClick={() => onSelect('full-file')}
+        className={`p-2 border rounded-xl ${selectedType === 'full-file' ? 'bg-blue-500 text-white' : 'bg-white'
+          }`}
+      >
+        3. Phát cả video + âm thanh từ file
+      </button>
     </div>
   );
 };

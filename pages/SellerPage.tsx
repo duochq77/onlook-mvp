@@ -1,42 +1,49 @@
-import { useEffect, useState } from 'react';
-import { useRoomContext, useTracks, VideoTrack, LiveKitRoom } from '@livekit/components-react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import LivestreamTypeSelector, { LivestreamType } from '@/components/LivestreamTypeSelector';
+import LivestreamDirect from '@/components/LivestreamDirect';
+import LivestreamHybrid from '@/components/LivestreamHybrid';
+import VideoUploadRelay from '@/components/VideoUploadRelay';
 
-export default function SellerPage() {
+const SellerPage: React.FC = () => {
+  const [livestreamType, setLivestreamType] = useState<LivestreamType>('direct');
   const [token, setToken] = useState<string | null>(null);
-  const roomName = 'onlook-room';
-  const identity = 'seller-' + Math.floor(Math.random() * 1000);
+  const router = useRouter();
+
+  const roomName = 'default-room'; // Tạm thời cố định, có thể cho người bán nhập sau
+  const identity = 'seller-' + Math.floor(Math.random() * 10000);
+  const role = livestreamType === 'direct' || livestreamType === 'hybrid-audio' ? 'publisher' : 'file';
+  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || '';
 
   useEffect(() => {
     const fetchToken = async () => {
-      const url = `/api/token?room=${roomName}&identity=${identity}&role=publisher`;
-      const res = await fetch(url);
+      const res = await fetch(
+        `/api/token?room=${roomName}&identity=${identity}&role=publisher`
+      );
       const data = await res.json();
       setToken(data.token);
     };
+
     fetchToken();
-  }, []);
-
-  if (!token) {
-    return <p>Đang lấy token livestream...</p>;
-  }
-
-  const tracks = useTracks(); // Lấy danh sách track trực tiếp từ hook useTracks
+  }, [livestreamType]);
 
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL || ''}
-      connect={true}
-      video={true}
-      audio={true}
-    >
-      <h2>Người bán đang livestream</h2>
-      <div>
-        {tracks.map((track, index) => (
-          <VideoTrack key={index} trackRef={track} />
-        ))}
-      </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Bắt đầu bán hàng livestream</h1>
 
-    </LiveKitRoom>
+      <LivestreamTypeSelector selectedType={livestreamType} onSelect={setLivestreamType} />
+
+      <div className="mt-6">
+        {token && livestreamType === 'direct' && (
+          <LivestreamDirect token={token} serverUrl={serverUrl} />
+        )}
+        {token && livestreamType === 'hybrid-audio' && (
+          <LivestreamHybrid token={token} serverUrl={serverUrl} />
+        )}
+        {livestreamType === 'full-file' && <VideoUploadRelay />}
+      </div>
+    </div>
   );
-}
+};
+
+export default SellerPage;
