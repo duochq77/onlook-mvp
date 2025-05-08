@@ -1,3 +1,4 @@
+// src/pages/GridViewer9.tsx
 import React, { useRef, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
@@ -42,7 +43,7 @@ const GridViewer9: React.FC = () => {
 
         if (dx < -100) {
             console.log('⬅️ Vuốt trái mạnh → quay lại menu chính')
-            router.push('/') // Trang menu chính
+            router.push('/')
         }
     }
 
@@ -88,7 +89,9 @@ const GridViewer9: React.FC = () => {
                         }}
                     >
                         <video
-                            ref={(el) => (videoRefs.current[index] = el)}
+                            ref={(el) => {
+                                videoRefs.current[index] = el
+                            }}
                             src={video.src}
                             muted
                             loop

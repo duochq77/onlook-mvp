@@ -49,7 +49,6 @@ const ViewerPage: React.FC = () => {
                     }
                 })
 
-                // Nếu sau 5s không có track nào → fallback video mẫu
                 setTimeout(() => {
                     if (!hasTrack) {
                         newRoom.disconnect()
@@ -66,9 +65,11 @@ const ViewerPage: React.FC = () => {
             setUsingSampleVideo(true)
             if (videoRef.current) {
                 const demoList = ['demo1.mp4', 'demo2.mp4']
-                const selected = src || `/sample-videos/${demoList[Math.floor(Math.random() * demoList.length)]}`
+                const selected =
+                    src || `/sample-videos/${demoList[Math.floor(Math.random() * demoList.length)]}`
                 videoRef.current.src = selected
                 videoRef.current.loop = true
+                videoRef.current.controls = true
                 videoRef.current.play().catch(() => { })
             }
         }
