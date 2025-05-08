@@ -1,7 +1,5 @@
-// src/pages/ViewerPage.tsx
 import React, { useEffect, useRef, useState } from 'react'
 import { Room } from 'livekit-client'
-import { connect } from 'livekit-client/dist/connect'
 import { useRouter } from 'next/router'
 
 const ViewerPage: React.FC = () => {
@@ -33,8 +31,9 @@ const ViewerPage: React.FC = () => {
                     `/api/token?room=${roomName}&identity=${identity}&role=${role}`
                 )
                 const data = await res.json()
-                const newRoom = await connect(serverUrl, data.token)
 
+                const newRoom = new Room()
+                await newRoom.connect(serverUrl, data.token)
                 setRoom(newRoom)
 
                 let hasTrack = false
