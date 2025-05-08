@@ -1,3 +1,4 @@
+// ✅ HomePage for Onlook - ensure correct UTF-8 encoding
 // pages/index.tsx
 import React from 'react'
 import Link from 'next/link'
