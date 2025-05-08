@@ -19,6 +19,7 @@
     "react-router-dom": "^7.5.3"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^19.1.3",
