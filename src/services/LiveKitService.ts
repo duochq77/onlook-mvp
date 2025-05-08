@@ -4,10 +4,11 @@ export const connectAsSeller = async (
   token: string,
   serverUrl: string
 ): Promise<Room> => {
-  const room = new Room({
+  const room = new Room()
+
+  await room.connect(serverUrl, token, {
     autoSubscribe: true,
   })
 
-  await room.connect(serverUrl, token)
   return room
 }

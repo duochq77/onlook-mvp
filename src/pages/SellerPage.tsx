@@ -8,7 +8,7 @@ const LivestreamDualFile = dynamic(() => import('@/components/LivestreamDualFile
 const VideoUploadRelay = dynamic(() => import('@/components/VideoUploadRelay').then(m => m.default), { ssr: false })
 
 const SellerPage: React.FC = () => {
-  const [mode, setMode] = useState<string>('direct')
+  const [mode, setMode] = useState<'direct' | 'hybrid' | 'dualfile' | 'replay'>('direct')
   const [link, setLink] = useState<string>('')
 
   const pageRef = useRef<HTMLDivElement>(null)
@@ -44,7 +44,7 @@ const SellerPage: React.FC = () => {
       <label className="block mb-2">🎬 Chọn hình thức livestream:</label>
       <select
         value={mode}
-        onChange={(e) => setMode(e.target.value)}
+        onChange={(e) => setMode(e.target.value as 'direct' | 'hybrid' | 'dualfile' | 'replay')}
         className="w-full p-2 mb-4 rounded bg-gray-800 border border-gray-600"
       >
         <option value="direct">1️⃣ Livestream trực tiếp video + audio</option>
