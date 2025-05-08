@@ -1,5 +1,7 @@
+// src/pages/ViewerPage.tsx
 import React, { useEffect, useRef, useState } from 'react'
-import { Room, connect } from 'livekit-client'
+import { Room } from 'livekit-client'
+import { connect } from 'livekit-client/connect'
 import { useRouter } from 'next/router'
 
 const ViewerPage: React.FC = () => {
