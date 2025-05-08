@@ -1,10 +1,11 @@
+// src/pages/SellerPage.tsx
 import React, { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
-const LivestreamDirect = dynamic(() => import('../components/LivestreamDirect'), { ssr: false })
-const LivestreamHybrid = dynamic(() => import('../components/LivestreamHybrid'), { ssr: false })
-const LivestreamDualFile = dynamic(() => import('../components/LivestreamDualFile'), { ssr: false })
-const VideoUploadRelay = dynamic(() => import('../components/VideoUploadRelay'), { ssr: false })
+const LivestreamDirect = dynamic(() => import('@/components/LivestreamDirect').then(m => m.default), { ssr: false })
+const LivestreamHybrid = dynamic(() => import('@/components/LivestreamHybrid').then(m => m.default), { ssr: false })
+const LivestreamDualFile = dynamic(() => import('@/components/LivestreamDualFile').then(m => m.default), { ssr: false })
+const VideoUploadRelay = dynamic(() => import('@/components/VideoUploadRelay').then(m => m.default), { ssr: false })
 
 const SellerPage: React.FC = () => {
   const [mode, setMode] = useState<string>('direct')
@@ -12,7 +13,6 @@ const SellerPage: React.FC = () => {
 
   const pageRef = useRef<HTMLDivElement>(null)
 
-  // Khi bắt đầu livestream thì khóa toàn màn hình
   useEffect(() => {
     const blockExit = (e: BeforeUnloadEvent) => {
       e.preventDefault()

@@ -1,25 +1,38 @@
-import React, { useRef, useEffect } from 'react'
+// File: src/components/LivestreamDirect.tsx
+import React, { useEffect, useRef } from 'react'
 
 interface Props {
-  stream: MediaStream | null
+  link: string
 }
 
-export const LivestreamDirect: React.FC<Props> = ({ stream }) => {
+const LivestreamDirect: React.FC<Props> = ({ link }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    if (stream && videoRef.current) {
-      videoRef.current.srcObject = stream
+    const startStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+        }
+      } catch (err) {
+        console.error('Failed to access camera or mic:', err)
+      }
     }
-  }, [stream])
+
+    startStream()
+  }, [])
 
   return (
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      muted
-      className="w-full h-full object-cover rounded-xl"
-    />
+    <div className="relative w-full h-full">
+      <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
+      {link && (
+        <div className="absolute bottom-2 right-2 text-xs text-white bg-black/50 px-2 py-1 rounded">
+          <a href={link} target="_blank" rel="noopener noreferrer">🔗 Link giới thiệu</a>
+        </div>
+      )}
+    </div>
   )
 }
+
+export default LivestreamDirect
