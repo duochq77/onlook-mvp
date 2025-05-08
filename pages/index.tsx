@@ -2,6 +2,8 @@
 import React from 'react'
 import Link from 'next/link'
 
+console.log('🟢 index.tsx đã được gọi – server build đang chạy')
+
 export default function HomePage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -15,6 +17,9 @@ export default function HomePage() {
                     Người Xem
                 </Link>
             </div>
+            <p className="text-sm text-red-600 mt-4">
+                ✅ Trang index.tsx đã render thành công (Debug Marker)
+            </p>
         </div>
     )
 }
