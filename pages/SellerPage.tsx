@@ -1,64 +1,71 @@
-// src/pages/SellerPage.tsx
-import React, { useState, useRef, useEffect } from 'react'
-import dynamic from 'next/dynamic'
-
-const LivestreamDirect = dynamic(() => import('@/components/LivestreamDirect').then(m => m.default), { ssr: false })
-const LivestreamHybrid = dynamic(() => import('@/components/LivestreamHybrid').then(m => m.default), { ssr: false })
-const LivestreamDualFile = dynamic(() => import('@/components/LivestreamDualFile').then(m => m.default), { ssr: false })
-const VideoUploadRelay = dynamic(() => import('@/components/VideoUploadRelay').then(m => m.default), { ssr: false })
+import React, { useEffect, useRef, useState } from 'react'
+import {
+  Room,
+  createLocalTracks,
+  LocalAudioTrack,
+  LocalVideoTrack,
+  LocalTrack
+} from 'livekit-client'
+import { connectToRoom } from '../src/services/LiveKitService'
 
 const SellerPage: React.FC = () => {
-  const [mode, setMode] = useState<'direct' | 'hybrid' | 'dualfile' | 'replay'>('direct')
-  const [link, setLink] = useState<string>('')
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [room, setRoom] = useState<Room | null>(null)
 
-  const pageRef = useRef<HTMLDivElement>(null)
+  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || ''
+  const roomName = 'default-room'
+  const identity = 'seller-' + Math.floor(Math.random() * 10000)
+  const role = 'publisher'
 
   useEffect(() => {
-    const blockExit = (e: BeforeUnloadEvent) => {
-      e.preventDefault()
-      e.returnValue = ''
+    const startLivestream = async () => {
+      try {
+        // Bước 1: Lấy track video và audio riêng biệt
+        const tracks = await createLocalTracks({
+          audio: true,
+          video: true
+        })
+
+        const res = await fetch(`/api/token?room=${roomName}&identity=${identity}&role=${role}`)
+        const data = await res.json()
+        const token = data.token
+
+        const connectedRoom = await connectToRoom(serverUrl, token, (joinedRoom) => {
+          setRoom(joinedRoom)
+        })
+
+        // Bước 2: Publish từng track
+        for (const track of tracks) {
+          console.log('📡 Publishing track:', track.kind)
+          await connectedRoom.localParticipant.publishTrack(track)
+        }
+
+        // Bước 3: Hiển thị video local
+        const videoTrack = tracks.find((t) => t.kind === 'video') as LocalVideoTrack
+        if (videoTrack && videoRef.current) {
+          const stream = new MediaStream([videoTrack.mediaStreamTrack])
+          videoRef.current.srcObject = stream
+          videoRef.current.muted = true // tránh tiếng vọng khi seller xem lại chính mình
+          await videoRef.current.play()
+        }
+
+        // (Không cần xử lý audio local vì đã publish rồi)
+      } catch (err) {
+        console.error('🚨 Lỗi livestream:', err)
+      }
     }
 
-    if (mode) {
-      window.addEventListener('beforeunload', blockExit)
-    }
+    startLivestream()
 
     return () => {
-      window.removeEventListener('beforeunload', blockExit)
+      room?.disconnect()
     }
-  }, [mode])
+  }, [])
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-2xl font-bold mb-4">🧑‍💼 Giao diện người bán</h1>
-
-      <label className="block mb-2">🔗 Link giới thiệu sản phẩm (nếu có):</label>
-      <input
-        type="text"
-        value={link}
-        onChange={(e) => setLink(e.target.value)}
-        placeholder="https://facebook.com/yourpage"
-        className="w-full mb-4 p-2 rounded bg-gray-800 border border-gray-600"
-      />
-
-      <label className="block mb-2">🎬 Chọn hình thức livestream:</label>
-      <select
-        value={mode}
-        onChange={(e) => setMode(e.target.value as 'direct' | 'hybrid' | 'dualfile' | 'replay')}
-        className="w-full p-2 mb-4 rounded bg-gray-800 border border-gray-600"
-      >
-        <option value="direct">1️⃣ Livestream trực tiếp video + audio</option>
-        <option value="hybrid">2️⃣ Video webcam, audio từ file</option>
-        <option value="dualfile">3️⃣ Video + Audio từ 2 file riêng</option>
-        <option value="replay">4️⃣ Phát file video có sẵn audio</option>
-      </select>
-
-      <div className="border rounded-xl p-4 bg-black">
-        {mode === 'direct' && <LivestreamDirect link={link} />}
-        {mode === 'hybrid' && <LivestreamHybrid link={link} />}
-        {mode === 'dualfile' && <LivestreamDualFile link={link} />}
-        {mode === 'replay' && <VideoUploadRelay link={link} />}
-      </div>
+    <div>
+      <h2>🔴 Seller Livestream</h2>
+      <video ref={videoRef} autoPlay playsInline style={{ width: '100%', borderRadius: 8 }} />
     </div>
   )
 }

@@ -1,14 +1,32 @@
-import { Room } from 'livekit-client'
+import {
+  Room,
+  RoomEvent,
+  RemoteTrackPublication,
+  RemoteTrack
+} from 'livekit-client'
 
-export const connectAsSeller = async (
+export async function connectToRoom(
+  serverUrl: string,
   token: string,
-  serverUrl: string
-): Promise<Room> => {
+  onConnected: (room: Room) => void,
+  onTrackSubscribed?: (
+    track: RemoteTrack,
+    publication: RemoteTrackPublication,
+    participant: any
+  ) => void
+): Promise<Room> {
   const room = new Room()
 
-  await room.connect(serverUrl, token, {
-    autoSubscribe: true,
-  })
+  if (onTrackSubscribed) {
+    room.on(RoomEvent.TrackSubscribed, onTrackSubscribed)
+  }
 
-  return room
+  try {
+    await room.connect(serverUrl, token)
+    onConnected(room)
+    return room
+  } catch (error) {
+    console.error('❌ Failed to connect to LiveKit room:', error)
+    throw error
+  }
 }
