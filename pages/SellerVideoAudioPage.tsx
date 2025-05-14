@@ -1,16 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { connectToRoom } from '../src/services/LiveKitService'
-import type { Room } from 'livekit-client'
 
 const SellerVideoAudioPage: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement>(null)
-    const [room, setRoom] = useState<Room | null>(null)
+    const [room, setRoom] = useState<any>(null)
 
     useEffect(() => {
         const startLivestream = async () => {
             const newRoom = await connectToRoom()
             setRoom(newRoom)
-            // Add logic to attach track to videoRef if needed
+
+            // Nếu cần hiển thị video local (nếu dùng webcam), thêm logic attach tại đây
+            // newRoom.localParticipant?.getTrackPublications()?.forEach(pub => { ... })
         }
 
         startLivestream()
@@ -18,8 +19,8 @@ const SellerVideoAudioPage: React.FC = () => {
 
     return (
         <div>
-            <h1>Seller Video + Audio from File</h1>
-            <video ref={videoRef} autoPlay playsInline controls muted />
+            <h1>Seller Video + Audio</h1>
+            <video ref={videoRef} autoPlay controls muted playsInline />
         </div>
     )
 }
