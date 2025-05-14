@@ -14,8 +14,7 @@ const ViewerPage: React.FC = () => {
             const newRoom = await connectToRoom()
             setRoom(newRoom)
 
-            // Khi có track được gửi từ seller
-            newRoom.on('trackSubscribed', (track, publication, participant) => {
+            newRoom.on('trackSubscribed', (track: any, publication: any, participant: any) => {
                 if (track.kind === 'video' && videoRef.current) {
                     const mediaStream = new MediaStream([track.mediaStreamTrack])
                     videoRef.current.srcObject = mediaStream
