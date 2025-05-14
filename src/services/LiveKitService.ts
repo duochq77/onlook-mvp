@@ -1,45 +1,27 @@
-// src/services/LiveKitService.ts
-import {
-    Room,
-    RemoteTrack,
-    RemoteTrackPublication,
-    connect,
-    RoomConnectOptions,
-    LocalTrack,
-} from 'livekit-client'
+import { connect, Room, RoomConnectOptions, RemoteTrack, RemoteTrackPublication, Participant } from 'livekit-client'
 
-export async function connectToRoom(
-    serverUrl: string,
-    token: string,
-    onConnected?: (room: Room) => void,
-    onTrackSubscribed?: (
-        track: RemoteTrack,
-        publication: RemoteTrackPublication,
-        participant: any
-    ) => void
-): Promise<Room> {
+export async function connectToRoom(): Promise<Room> {
+    const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || ''
+    const roomName = 'default-room'
+    const identity = 'seller-' + Math.floor(Math.random() * 10000)
+    const role = 'publisher'
+
+    const tokenResponse = await fetch(`/api/token?room=${roomName}&identity=${identity}&role=${role}`)
+    const { token } = await tokenResponse.json()
+
     const room = new Room()
 
-    if (onTrackSubscribed) {
-        room.on('trackSubscribed', onTrackSubscribed)
-    }
-
-    await room.connect(serverUrl, token, {
+    await connect(room, serverUrl, token, {
         autoSubscribe: true,
     } as RoomConnectOptions)
 
-    onConnected?.(room)
+    room.on('participantConnected', (participant: Participant) => {
+        console.log(`👤 Participant connected: ${participant.identity}`)
+    })
+
+    room.on('trackSubscribed', (track: RemoteTrack, publication: RemoteTrackPublication, participant: Participant) => {
+        console.log(`📡 Subscribed to ${track.kind} from ${participant.identity}`)
+    })
+
     return room
-}
-
-export async function publishTracks(room: Room, tracks: LocalTrack[]) {
-    for (const track of tracks) {
-        const existing = room.localParticipant.getTrackPublications().find(
-            (pub) => pub.track?.mediaStreamTrack.id === track.mediaStreamTrack.id
-        )
-
-        if (!existing) {
-            await room.localParticipant.publishTrack(track)
-        }
-    }
 }
