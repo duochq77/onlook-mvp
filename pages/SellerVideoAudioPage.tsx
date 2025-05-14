@@ -25,8 +25,8 @@ const SellerVideoAudioPage: React.FC = () => {
         videoElement.loop = true
         await videoElement.play()
 
-        // Capture video track
-        const videoStream = videoElement.captureStream()
+        // Ép kiểu để tránh lỗi captureStream
+        const videoStream = (videoElement as any).captureStream()
         const videoTrack = videoStream.getVideoTracks()[0]
 
         // Tạo audio element từ file
@@ -36,15 +36,14 @@ const SellerVideoAudioPage: React.FC = () => {
         audioElement.loop = true
         await audioElement.play()
 
-        // Capture audio track
-        const audioStream = audioElement.captureStream()
+        const audioStream = (audioElement as any).captureStream()
         const audioTrack = audioStream.getAudioTracks()[0]
 
         // Gửi cả 2 track vào LiveKit
         await newRoom.localParticipant.publishTrack(videoTrack)
         await newRoom.localParticipant.publishTrack(audioTrack)
 
-        // Hiển thị video preview cho seller
+        // Hiển thị preview video cho người bán
         if (videoPreviewRef.current) {
             videoPreviewRef.current.srcObject = videoStream
             videoPreviewRef.current.play()
