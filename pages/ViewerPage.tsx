@@ -13,6 +13,21 @@ const ViewerPage: React.FC = () => {
         const startViewing = async () => {
             const newRoom = await connectToRoom()
             setRoom(newRoom)
+
+            // Khi có track được gửi từ seller
+            newRoom.on('trackSubscribed', (track, publication, participant) => {
+                if (track.kind === 'video' && videoRef.current) {
+                    const mediaStream = new MediaStream([track.mediaStreamTrack])
+                    videoRef.current.srcObject = mediaStream
+                    videoRef.current.play()
+                }
+
+                if (track.kind === 'audio') {
+                    const audio = new Audio()
+                    audio.srcObject = new MediaStream([track.mediaStreamTrack])
+                    audio.play()
+                }
+            })
         }
 
         startViewing()
@@ -20,8 +35,8 @@ const ViewerPage: React.FC = () => {
 
     return (
         <div>
-            <h1>Viewer Livestream</h1>
-            <video ref={videoRef} autoPlay controls playsInline />
+            <h1>👁️ Người Xem Livestream</h1>
+            <video ref={videoRef} autoPlay playsInline controls style={{ width: '100%', maxWidth: 600 }} />
         </div>
     )
 }
