@@ -16,7 +16,7 @@ const TestUploadPage: React.FC = () => {
                 body: formData,
             })
 
-            if (!res.ok) throw new Error('Lỗi server trả về: ' + res.status)
+            if (!res.ok) throw new Error('Lỗi server: ' + res.status)
 
             const blob = await res.blob()
             const url = URL.createObjectURL(blob)
@@ -30,18 +30,18 @@ const TestUploadPage: React.FC = () => {
 
     return (
         <div style={{ padding: 24 }}>
-            <h1>🧪 Test Upload Video + Audio → Render</h1>
+            <h1>🧪 Test Upload Video + Audio</h1>
             <form onSubmit={handleUpload} style={{ marginBottom: 16 }}>
                 <input type="file" name="video" accept="video/mp4" required />
                 <input type="file" name="audio" accept="audio/mp3" required />
                 <button type="submit" disabled={loading}>
-                    {loading ? '⏳ Đang xử lý...' : '🚀 Upload & Ghép'}
+                    {loading ? '⏳ Đang xử lý...' : '🚀 Gửi tới Render'}
                 </button>
             </form>
 
             {videoUrl && (
                 <div>
-                    <h2>🎥 Kết quả:</h2>
+                    <h2>🎥 Kết quả ghép từ server:</h2>
                     <video src={videoUrl} controls autoPlay style={{ width: '100%', maxWidth: 600 }} />
                 </div>
             )}
