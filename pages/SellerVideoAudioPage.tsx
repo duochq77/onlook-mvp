@@ -17,33 +17,40 @@ const SellerVideoAudioPage: React.FC = () => {
         const newRoom = await connectToRoom()
         setRoom(newRoom)
 
-        // Tạo video element từ file
+        // 🎬 Video element từ file
         const videoURL = URL.createObjectURL(videoFile)
         const videoElement = document.createElement('video')
         videoElement.src = videoURL
         videoElement.muted = true
         videoElement.loop = true
+
+        await new Promise((resolve) => {
+            videoElement.onloadedmetadata = resolve
+        })
         await videoElement.play()
 
-        // Ép kiểu để tránh lỗi captureStream
         const videoStream = (videoElement as any).captureStream()
-        const videoTrack = videoStream.getVideoTracks()[0]
+        const videoTrack = videoStream?.getVideoTracks?.()[0]
 
-        // Tạo audio element từ file
+        // 🔊 Audio element từ file
         const audioURL = URL.createObjectURL(audioFile)
         const audioElement = document.createElement('audio')
         audioElement.src = audioURL
         audioElement.loop = true
+
+        await new Promise((resolve) => {
+            audioElement.onloadedmetadata = resolve
+        })
         await audioElement.play()
 
         const audioStream = (audioElement as any).captureStream()
-        const audioTrack = audioStream.getAudioTracks()[0]
+        const audioTrack = audioStream?.getAudioTracks?.()[0]
 
-        // Gửi cả 2 track vào LiveKit
-        await newRoom.localParticipant.publishTrack(videoTrack)
-        await newRoom.localParticipant.publishTrack(audioTrack)
+        // ✅ Gửi track vào room nếu tồn tại
+        if (videoTrack) await newRoom.localParticipant.publishTrack(videoTrack)
+        if (audioTrack) await newRoom.localParticipant.publishTrack(audioTrack)
 
-        // Hiển thị preview video cho người bán
+        // 👀 Preview video
         if (videoPreviewRef.current) {
             videoPreviewRef.current.srcObject = videoStream
             videoPreviewRef.current.play()
@@ -62,7 +69,14 @@ const SellerVideoAudioPage: React.FC = () => {
             </button>
 
             <h2>👀 Xem thử video đang phát:</h2>
-            <video ref={videoPreviewRef} autoPlay muted playsInline controls style={{ width: '100%', maxWidth: 600 }} />
+            <video
+                ref={videoPreviewRef}
+                autoPlay
+                muted
+                playsInline
+                controls
+                style={{ width: '100%', maxWidth: 600 }}
+            />
         </div>
     )
 }
