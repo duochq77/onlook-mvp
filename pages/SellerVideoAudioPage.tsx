@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { connectToRoom } from '../src/services/LiveKitService'
-console.log("⚙️ Force rebuild SellerVideoAudioPage");
+console
 const SellerVideoAudioPage: React.FC = () => {
     const videoPreviewRef = useRef<HTMLVideoElement>(null)
     const [room, setRoom] = useState<any>(null)
