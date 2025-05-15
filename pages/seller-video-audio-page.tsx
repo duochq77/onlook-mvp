@@ -14,7 +14,7 @@ const SellerVideoAudioPage: React.FC = () => {
             return
         }
 
-        // 🛰 Gửi file lên server Render để xử lý
+        // 🛰 Gửi lên server Render
         const formData = new FormData()
         formData.append('video', videoFile)
         formData.append('audio', audioFile)
@@ -32,28 +32,29 @@ const SellerVideoAudioPage: React.FC = () => {
         const mergedBlob = await res.blob()
         const mergedUrl = URL.createObjectURL(mergedBlob)
 
-        // 🎬 Tạo video element từ file đã hợp nhất
+        // 🎬 Tạo video element từ blob nhận về
         const videoElement = document.createElement('video')
         videoElement.src = mergedUrl
         videoElement.loop = true
         videoElement.muted = true
+
+        await new Promise((r) => (videoElement.onloadedmetadata = r))
         await videoElement.play()
 
         const stream = (videoElement as any).captureStream()
         const videoTrack = stream.getVideoTracks()[0]
         const audioTrack = stream.getAudioTracks()[0]
 
-        // 📡 Kết nối LiveKit
+        // 📡 Kết nối LiveKit và publish
         const newRoom = await connectToRoom()
         setRoom(newRoom)
 
         if (videoTrack) await newRoom.localParticipant.publishTrack(videoTrack)
         if (audioTrack) await newRoom.localParticipant.publishTrack(audioTrack)
 
-        // 👀 Xem preview
         if (videoPreviewRef.current) {
             videoPreviewRef.current.srcObject = stream
-            videoPreviewRef.current.play()
+            await videoPreviewRef.current.play()
         }
 
         setIsStreaming(true)
