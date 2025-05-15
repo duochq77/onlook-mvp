@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { connectToRoom } from '../src/services/LiveKitService'
-const [videoFile, setVideoFile] = useState<File | null>(null)
+
 const SellerVideoAudioPage: React.FC = () => {
     const videoPreviewRef = useRef<HTMLVideoElement>(null)
     const [room, setRoom] = useState<any>(null)
